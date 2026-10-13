@@ -11,4 +11,10 @@ import java.util.Optional;
 public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
     List<GroupMember> findByGroupId(Long groupId);
     Optional<GroupMember> findByGroupIdAndStudentId(Long groupId, Long studentId);
+
+    // Kiểm tra sinh viên đã có nhóm trong đợt này chưa
+    boolean existsByStudentIdAndGroupRoundId(Long studentId, Long roundId);
+    
+    // Lấy danh sách các nhóm mà sinh viên tham gia để tra cứu điểm
+    List<GroupMember> findByStudentId(Long studentId);
 }

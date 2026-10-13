@@ -6,8 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
     Optional<Student> findByStudentCode(String studentCode);
     Optional<Student> findByEmail(String email);
+
+    // Lấy thông tin Sinh viên từ username đăng nhập của Spring Security
+    Optional<Student> findByUserUsername(String username);
 }

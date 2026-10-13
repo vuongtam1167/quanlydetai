@@ -28,6 +28,11 @@ public class StudentGroupService {
     public GroupMember addMemberToGroup(Long groupId, Student student, boolean isLeader) {
         StudentGroup group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm"));
+
+        // Kiểm tra sinh viên đã tham gia nhóm nào trong cùng đợt này chưa
+        if (memberRepository.existsByStudentIdAndGroupRoundId(student.getId(), group.getRound().getId())) {
+            throw new RuntimeException("Sinh viên đã tham gia một nhóm khác trong đợt đăng ký này!");
+        }
         
         List<GroupMember> currentMembers = memberRepository.findByGroupId(groupId);
         
