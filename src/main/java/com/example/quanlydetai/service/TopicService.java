@@ -48,4 +48,9 @@ public class TopicService {
                 .filter(t -> t.getStatus() == TopicStatus.APPROVED)
                 .toList();
     }
+
+    public void deleteById(Long id) {
+        Topic topic = findById(id); 
+        topicRepository.delete(topic);
+    }
 }

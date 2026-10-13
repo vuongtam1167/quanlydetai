@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tra cứu kết quả Đề tài</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <div class="alert alert-info shadow-sm mb-4">
+            <h5 class="mb-1">🎓 Hồ sơ sinh viên: <strong th:text="${student.fullName}">Nguyễn Văn B</strong></h5>
+            <p class="mb-0">MSSV: <span th:text="${student.studentCode}">123456</span> | Lớp: <span th:text="${student.className}">IT01</span></p>
+        </div>
+
+        <h4 class="fw-bold mb-3">Kết quả các đợt Đề tài đã tham gia</h4>
+        
+        <div th:if="${groups.empty}" class="alert alert-warning">
+            Bạn chưa có điểm đợt nào được công bố hoặc chưa tham gia nhóm nào!
+        </div>
+
+        <!-- Render danh sách nhóm mà sinh viên tham gia và đã có điểm -->
+        <div class="row">
+            <div class="col-md-6 mb-4" th:each="group : ${groups}">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-success text-white fw-bold">
+                        Đợt: <span th:text="${group.round.name}">KLTN 2026</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-primary" th:text="${group.topic != null ? group.topic.title : 'Chưa chọn đề tài'}">Tên đề tài</h5>
+                        <p class="card-text mb-1"><strong>Tên nhóm:</strong> <span th:text="${group.groupName}">Nhóm 1</span></p>
+                        <hr>
+                        <div class="text-center p-3 bg-light rounded border">
+                            <p class="mb-1 text-muted">Điểm Hội Đồng (Trung bình cộng)</p>
+                            <h2 class="text-danger fw-bold mb-0" th:text="${group.finalScore != null ? group.finalScore : 'Chưa có điểm'}">8.5</h2>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white text-center">
+                        <button class="btn btn-outline-primary btn-sm w-100">Xem chi tiết nhận xét phản biện</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

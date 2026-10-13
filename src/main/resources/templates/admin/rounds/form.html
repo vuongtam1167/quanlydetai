@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thiết lập Đợt Đăng Ký</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .err { color: #dc3545; font-size: 0.875em; }
+    </style>
+</head>
+<body class="bg-light">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <div class="card shadow-sm border-0" style="max-width: 800px; margin: auto;">
+            <div class="card-header bg-primary text-white py-3">
+                <h4 class="mb-0 fw-bold">Thiết Lập Đợt Đăng Ký Mới</h4>
+            </div>
+            <div class="card-body p-4">
+                <form th:object="${round}" method="post" th:action="@{/admin/rounds}">
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Tên đợt đăng ký</label>
+                            <input type="text" class="form-control" th:field="*{name}" placeholder="VD: Khóa luận tốt nghiệp HK1 2026-2027">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Loại đề tài</label>
+                            <select class="form-select" th:field="*{type}">
+                                <option value="MON_HOC">Môn học</option>
+                                <option value="NCKH">Nghiên cứu khoa học</option>
+                                <option value="TLCN">Tiểu luận chuyên ngành</option>
+                                <option value="KLTN">Khóa luận tốt nghiệp</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info border-0 shadow-sm p-3 mb-4">
+                        <h6 class="fw-bold mb-3 text-primary">Giai đoạn 1: Giảng viên đề xuất đề tài</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày bắt đầu GĐ1</label>
+                                <input type="datetime-local" class="form-control" th:field="*{lecturerStartDate}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày kết thúc GĐ1</label>
+                                <input type="datetime-local" class="form-control" th:field="*{lecturerEndDate}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success border-0 shadow-sm p-3 mb-4">
+                        <h6 class="fw-bold mb-3 text-success">Giai đoạn 2: Sinh viên đăng ký nhóm</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày bắt đầu GĐ2</label>
+                                <input type="datetime-local" class="form-control" th:field="*{studentStartDate}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày kết thúc GĐ2</label>
+                                <input type="datetime-local" class="form-control" th:field="*{studentEndDate}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end border-top pt-3">
+                        <a th:href="@{/admin/rounds}" class="btn btn-secondary me-2 fw-bold">Hủy</a>
+                        <button type="submit" class="btn btn-primary fw-bold">Tạo Đợt Đăng Ký</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

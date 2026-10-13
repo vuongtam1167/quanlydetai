@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Đợt Đăng Ký</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-primary">Quản lý Các Đợt Đăng Ký</h3>
+            <a th:href="@{/admin/rounds/new}" class="btn btn-primary fw-bold">+ Tạo đợt đăng ký mới</a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-hover table-bordered mb-0 align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Tên Đợt</th>
+                            <th>Loại</th>
+                            <th>Thời gian GĐ1 (Giảng viên)</th>
+                            <th>Thời gian GĐ2 (Sinh viên)</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${rounds}">
+                            <td class="fw-bold text-primary" th:text="${r.name}">KLTN 2026</td>
+                            <td class="text-center">
+                                <span class="badge bg-info text-dark" th:text="${r.type.name()}">KLTN</span>
+                            </td>
+                            <td class="text-center text-muted" style="font-size: 0.9em;">
+                                <span th:text="${#temporals.format(r.lecturerStartDate, 'dd/MM/yyyy')}"></span> - 
+                                <span th:text="${#temporals.format(r.lecturerEndDate, 'dd/MM/yyyy')}"></span>
+                            </td>
+                            <td class="text-center text-muted" style="font-size: 0.9em;">
+                                <span th:text="${#temporals.format(r.studentStartDate, 'dd/MM/yyyy')}"></span> - 
+                                <span th:text="${#temporals.format(r.studentEndDate, 'dd/MM/yyyy')}"></span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-success" th:if="${r.isPublished}">Đã Công Bố Điểm</span>
+                                <span class="badge bg-secondary" th:unless="${r.isPublished}">Đang Xử Lý</span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/rounds/{id}/edit(id=${r.id})}" class="btn btn-sm btn-outline-primary">Sửa</a>
+                                
+                                <!-- Chỉ hiển thị nút Công bố kết quả nếu chưa publish -->
+                                <form th:unless="${r.isPublished}" th:action="@{/admin/rounds/{id}/publish(id=${r.id})}" method="post" class="d-inline">
+                                    <button class="btn btn-sm btn-warning fw-bold" onclick="return confirm('Hệ thống sẽ tổng hợp điểm và gửi email cho toàn bộ Sinh viên. Bạn có chắc chắn?')">
+                                        Công bố điểm
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
