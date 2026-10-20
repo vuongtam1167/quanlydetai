@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Đề tài của tôi', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1>ĐỀ TÀI CỦA TÔI (GIAI ĐOẠN 1)</h1>
+        <div class="actions"><a class="btn btn-primary" th:href="@{/lecturer/topics/new}">+ Đề xuất đề tài mới</a></div>
+    </div>
+
+    <div class="alert alert-info" th:if="${#lists.isEmpty(openRounds)}">
+        Hiện chưa có đợt đăng ký nào đang trong thời gian giảng viên đề xuất đề tài (Giai đoạn 1). Khi Trưởng khoa mở đợt mới, bạn sẽ đề xuất được ở đây.
+    </div>
+
+    <div class="card">
+        <p class="help mb-2">Quy trình: Giảng viên đề xuất → Trưởng bộ môn thẩm định → Trưởng khoa phê duyệt → Sinh viên đăng ký ở Giai đoạn 2. Chỉ sửa/xóa được đề tài do bạn tạo khi còn chờ duyệt hoặc bị từ chối, chưa có nhóm đăng ký và đợt còn trong thời gian đề xuất.</p>
+        <div class="table-wrap">
+            <table class="ute-table">
+                <thead><tr><th>Mã</th><th>Tên đề tài</th><th>Đợt</th><th>GV hướng dẫn</th><th>Nhóm đăng ký</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                <tbody>
+                <tr th:each="r : ${rows}">
+                    <td><strong th:text="${r.topic().code()}">DT001</strong></td>
+                    <td>
+                        <span th:text="${r.topic().title()}">Tên đề tài</span>
+                        <div class="help" style="color:var(--ute-red)" th:if="${r.topic().note() != null}" th:text="${r.topic().note()}"></div>
+                    </td>
+                    <td th:text="${r.topic().roundName()}">KLTN</td>
+                    <td th:text="${r.topic().advisors()}">GV A</td>
+                    <td><span th:if="${r.groupName() != null}" th:text="${r.groupName()}">Nhóm 01</span><span class="muted" th:if="${r.groupName() == null}">—</span></td>
+                    <td><span class="badge" th:classappend="${r.topic().statusClass()}" th:text="${r.topic().statusLabel()}">Trạng thái</span></td>
+                    <td style="white-space:nowrap">
+                        <th:block th:if="${r.editable()}">
+                            <a class="btn btn-outline btn-sm" th:href="@{/lecturer/topics/{id}/edit(id=${r.topic().id()})}">Sửa</a>
+                            <form th:action="@{/lecturer/topics/{id}/delete(id=${r.topic().id()})}" method="post" style="display:inline"
+                                  data-confirm="Xóa đề tài này?">
+                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                            </form>
+                        </th:block>
+                        <span class="muted" th:unless="${r.editable()}">—</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(rows)}"><td colspan="7" class="text-center muted" style="padding:28px">Bạn chưa có đề tài nào.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

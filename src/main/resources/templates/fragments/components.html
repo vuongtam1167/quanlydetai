@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Tiêu đề trang dạng nhãn xanh vát góc (giống cổng UTE) -->
+<div th:fragment="pageTitle(text)" class="page-title">
+    <h1 th:text="${text}">TIÊU ĐỀ</h1>
+</div>
+
+<!-- Trạng thái trống -->
+<div th:fragment="empty(message)" class="empty-state">
+    <div class="empty-icon">📭</div>
+    <p th:text="${message}">Chưa có dữ liệu.</p>
+</div>
+
+<!-- Hộp thông báo lỗi dùng cho các trang error/* -->
+<div th:fragment="errorBox(code, heading, text)" class="card error-box">
+    <div class="error-code" th:text="${code}">404</div>
+    <h2 th:text="${heading}">Tiêu đề lỗi</h2>
+    <p class="muted" th:text="${errorMessage != null} ? ${errorMessage} : ${text}">Mô tả lỗi</p>
+    <a class="btn btn-primary mt-2" th:href="@{/}">← Về trang chủ</a>
+</div>
+
+
+<!-- Biểu đồ cột ngang thuần CSS: items là danh sách StatItem; color: bar-blue | bar-green | bar-red | bar-orange -->
+<div th:fragment="barChart(items, color)">
+    <div class="muted" th:if="${#lists.isEmpty(items)}">Chưa có dữ liệu.</div>
+    <div class="bar-row" th:each="i : ${items}">
+        <div class="bar-label" th:text="${i.label()}" th:title="${i.label()}">Nhãn</div>
+        <div class="bar-track"><div class="bar-fill" th:classappend="${color}" th:style="'width:' + ${i.percent()} + '%'"></div></div>
+        <div class="bar-value" th:text="${i.value()}">0</div>
+    </div>
+</div>
+
+</body>
+</html>

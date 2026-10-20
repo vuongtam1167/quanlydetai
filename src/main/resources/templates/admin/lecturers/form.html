@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Giảng viên', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1 th:text="${form.id == null} ? 'THÊM GIẢNG VIÊN' : 'SỬA GIẢNG VIÊN'">THÊM GIẢNG VIÊN</h1>
+    </div>
+    <div class="alert alert-danger" th:if="${formError}" th:text="${formError}"></div>
+    <div class="card" style="max-width:860px">
+        <form th:action="@{/admin/lecturers/save}" th:object="${form}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Mã giảng viên <span class="req">*</span></label>
+                    <input type="text" class="form-control" th:field="*{lecturerCode}" placeholder="VD: GV021">
+                    <span class="field-error" th:errors="*{lecturerCode}"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Họ và tên <span class="req">*</span></label>
+                    <input type="text" class="form-control" th:field="*{fullName}">
+                    <span class="field-error" th:errors="*{fullName}"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Email <span class="req">*</span></label>
+                    <input type="email" class="form-control" th:field="*{email}">
+                    <span class="field-error" th:errors="*{email}"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" class="form-control" th:field="*{phone}">
+                    <span class="field-error" th:errors="*{phone}"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Học hàm / học vị</label>
+                    <input type="text" class="form-control" th:field="*{academicRank}" placeholder="VD: TS., ThS.">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bộ môn <span class="req">*</span></label>
+                    <select class="form-control" th:field="*{departmentId}">
+                        <option value="">-- Chọn bộ môn --</option>
+                        <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.name}"></option>
+                    </select>
+                    <span class="field-error" th:errors="*{departmentId}"></span>
+                </div>
+            </div>
+            <div class="card" style="background:var(--row-alt);box-shadow:none">
+                <div class="card-title">Tài khoản đăng nhập</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tên đăng nhập</label>
+                        <input type="text" class="form-control" th:field="*{username}" th:readonly="${form.id != null}"
+                               placeholder="Để trống: dùng mã giảng viên (chữ thường)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Vai trò <span class="req">*</span></label>
+                        <select class="form-control" th:field="*{role}">
+                            <option th:each="r : ${roleLabels}" th:value="${r.key}" th:text="${r.value}"></option>
+                        </select>
+                        <span class="field-error" th:errors="*{role}"></span>
+                    </div>
+                </div>
+                <div class="form-group mb-0">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" th:field="*{password}" autocomplete="new-password"
+                           th:placeholder="${form.id == null} ? 'Để trống: mật khẩu mặc định 123456' : 'Để trống: giữ nguyên mật khẩu cũ'">
+                </div>
+            </div>
+            <div class="flex gap-1" style="justify-content:flex-end">
+                <a class="btn btn-outline" th:href="@{/admin/lecturers}">Hủy</a>
+                <button type="submit" class="btn btn-primary">Lưu giảng viên</button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

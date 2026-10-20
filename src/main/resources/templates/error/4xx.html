@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Yêu cầu không hợp lệ', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: errorBox('Lỗi', 'Yêu cầu không hợp lệ', 'Dữ liệu gửi lên không hợp lệ, vui lòng kiểm tra và thử lại.')}"></div>
+</main>
+</body>
+</html>

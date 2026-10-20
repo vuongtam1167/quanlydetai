@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface CouncilRepository extends JpaRepository<Council, Long> {
     List<Council> findByRoundId(Long roundId);
+    List<Council> findAllByOrderByDefenseDateDesc();
+    boolean existsByRoundId(Long roundId);
 }

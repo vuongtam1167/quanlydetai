@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface CouncilMemberRepository extends JpaRepository<CouncilMember, Long> {
     List<CouncilMember> findByCouncilId(Long councilId);
+    boolean existsByLecturerId(Long lecturerId);
+    void deleteByCouncilId(Long councilId);
+    List<CouncilMember> findByLecturerId(Long lecturerId);
 }

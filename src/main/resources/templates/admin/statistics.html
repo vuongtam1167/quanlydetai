@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Thống kê', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('THỐNG KÊ TỔNG QUAN')}"></div>
+
+    <div class="grid-4 mb-2" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+        <div class="card stat mb-0"><span class="stat-value" th:text="${stats.rounds()}">0</span><span class="stat-label">Đợt đăng ký (<span th:text="${stats.publishedRounds()}">0</span> đã công bố)</span></div>
+        <div class="card stat mb-0"><span class="stat-value" th:text="${stats.topics()}">0</span><span class="stat-label">Đề tài</span></div>
+        <div class="card stat mb-0"><span class="stat-value" th:text="${stats.groups()}">0</span><span class="stat-label">Nhóm sinh viên</span></div>
+        <div class="card stat mb-0"><span class="stat-value" th:text="${stats.students()}">0</span><span class="stat-label">Sinh viên</span></div>
+        <div class="card stat mb-0"><span class="stat-value" th:text="${stats.lecturers()}">0</span><span class="stat-label">Giảng viên</span></div>
+        <div class="card stat mb-0"><span class="stat-value" th:text="${stats.councils()}">0</span><span class="stat-label">Hội đồng</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Việc cần xử lý</div>
+        <div class="grid-4" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+            <a class="todo" th:href="@{/admin/topics(status='DEAN_APPROVED')}">
+                <strong th:text="${stats.awaitingDean()}">0</strong><span>đề tài chờ Trưởng khoa phê duyệt</span></a>
+            <a class="todo" th:href="@{/admin/reviewers}">
+                <strong th:text="${stats.groupsWithoutReviewer()}">0</strong><span>nhóm chưa có GV phản biện</span></a>
+            <a class="todo" th:href="@{/admin/councils}">
+                <strong th:text="${stats.groupsWithoutCouncil()}">0</strong><span>nhóm chưa được xếp hội đồng</span></a>
+            <div class="todo">
+                <strong th:text="${stats.awaitingDepartment()}">0</strong><span>đề tài đang chờ bộ môn thẩm định</span></div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-title">Đề tài theo trạng thái</div>
+            <div th:replace="~{fragments/components :: barChart(${stats.topicsByStatus()}, 'bar-blue')}"></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Đề tài theo bộ môn</div>
+            <div th:replace="~{fragments/components :: barChart(${stats.topicsByDepartment()}, 'bar-green')}"></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Số nhóm theo đợt (8 đợt gần nhất)</div>
+            <div th:replace="~{fragments/components :: barChart(${stats.groupsByRound()}, 'bar-orange')}"></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Phổ điểm tổng kết</div>
+            <div th:replace="~{fragments/components :: barChart(${stats.scoreBuckets()}, 'bar-red')}"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Tải phản biện của giảng viên (nhiều nhất)</div>
+        <div th:replace="~{fragments/components :: barChart(${stats.reviewerLoad()}, 'bar-blue')}"></div>
+    </div>
+</main>
+</body>
+</html>

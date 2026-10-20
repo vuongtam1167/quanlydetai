@@ -7,7 +7,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,7 +20,6 @@ import java.util.List;
 public class DataSeeder {
 
     @Bean
-    @Transactional
     public CommandLineRunner initDatabase(
             UserRepository userRepository, DepartmentRepository departmentRepository,
             LecturerRepository lecturerRepository, StudentRepository studentRepository,
@@ -28,14 +28,20 @@ public class DataSeeder {
             GroupMemberRepository groupMemberRepository, SubmissionRepository submissionRepository,
             ReviewAssignmentRepository reviewRepository, CouncilRepository councilRepository,
             CouncilMemberRepository councilMemberRepository, CouncilEvaluationRepository evaluationRepository,
-            AnnouncementRepository announcementRepository, PasswordEncoder encoder) {
+            AnnouncementRepository announcementRepository, PasswordEncoder encoder,
+            PlatformTransactionManager txManager,
+            com.example.quanlydetai.service.ProfileRepairService profileRepair) {
 
-        return args -> {
+        return args -> new TransactionTemplate(txManager).executeWithoutResult(status -> {
             // Kiểm tra nếu database đã có dữ liệu thì không seed lại để tránh lỗi Duplicate
             if (departmentRepository.count() > 0) {
+                profileRepair.repair(); // bổ sung hồ sơ cho Trưởng bộ môn nếu thiếu
                 return;
             }
 
+            // Dọn tài khoản mặc định cũ (do SecurityConfig phiên bản trước tạo) để không trùng username
+            announcementRepository.deleteAll();
+            userRepository.deleteAll();
             System.out.println("Bắt đầu khởi tạo dữ liệu mẫu (Data Seeding) từ SQL Dump...");
             String defaultPwd = encoder.encode("123456");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -451,6 +457,12 @@ public class DataSeeder {
                 eval.setScore(new BigDecimal((String) e[3]));
                 eval.setComments((String) e[4]);
                 evaluationRepository.save(eval);
+                // Gắn nhóm vào hội đồng đã chấm nhóm đó (để màn hình Admin/Chủ tịch hiển thị đúng)
+                StudentGroup evaluated = groups.get((int) e[1]);
+                if (evaluated.getCouncil() == null) {
+                    evaluated.setCouncil(councils.get((int) e[0]));
+                    groupRepository.save(evaluated);
+                }
             }
 
             // ==========================================
@@ -487,7 +499,8 @@ public class DataSeeder {
                 announcementRepository.save(ann);
             }
 
+            profileRepair.repair();
             System.out.println("✅ Đã khởi tạo hoàn tất CHÍNH XÁC " + deptData.length + " Bộ môn, " + userData.length + " User, " + lecData.length + " Giảng viên, " + stuData.length + " Sinh viên, và hàng trăm bản ghi liên quan khác đúng theo Data Dump!");
-        };
+        });
     }
 }

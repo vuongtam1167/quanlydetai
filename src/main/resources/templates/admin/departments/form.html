@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Bộ môn', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1 th:text="${form.id == null} ? 'THÊM BỘ MÔN' : 'SỬA BỘ MÔN'">THÊM BỘ MÔN</h1>
+    </div>
+    <div class="alert alert-danger" th:if="${formError}" th:text="${formError}"></div>
+    <div class="card" style="max-width:700px">
+        <form th:action="@{/admin/departments/save}" th:object="${form}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="form-group">
+                <label class="form-label">Mã bộ môn <span class="req">*</span></label>
+                <input type="text" class="form-control" th:field="*{code}" placeholder="VD: CNPM">
+                <span class="field-error" th:errors="*{code}"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tên bộ môn <span class="req">*</span></label>
+                <input type="text" class="form-control" th:field="*{name}">
+                <span class="field-error" th:errors="*{name}"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Mô tả</label>
+                <textarea class="form-control" rows="3" th:field="*{description}"></textarea>
+            </div>
+            <div class="flex gap-1" style="justify-content:flex-end">
+                <a class="btn btn-outline" th:href="@{/admin/departments}">Hủy</a>
+                <button type="submit" class="btn btn-primary">Lưu bộ môn</button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

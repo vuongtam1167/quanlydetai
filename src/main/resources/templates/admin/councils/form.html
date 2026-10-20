@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Hội đồng bảo vệ', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1 th:text="${form.id == null} ? 'THÀNH LẬP HỘI ĐỒNG BẢO VỆ' : 'SỬA HỘI ĐỒNG BẢO VỆ'">THÀNH LẬP HỘI ĐỒNG BẢO VỆ</h1>
+    </div>
+
+    <div class="alert alert-danger" th:if="${formError}" th:text="${formError}"></div>
+    <div class="alert alert-warning" th:if="${locked}">Hội đồng này đã có điểm chấm nên không thể chỉnh sửa.</div>
+
+    <div class="card" style="max-width:980px">
+        <form th:action="@{/admin/councils/save}" th:object="${form}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Tên hội đồng <span class="req">*</span></label>
+                    <input type="text" class="form-control" th:field="*{name}" placeholder="VD: Hội đồng KLTN 1">
+                    <span class="field-error" th:errors="*{name}"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Đợt đăng ký <span class="req">*</span></label>
+                    <select class="form-control" th:field="*{roundId}" id="roundSelect">
+                        <option value="">-- Chọn đợt --</option>
+                        <option th:each="r : ${rounds}" th:value="${r.id()}" th:text="${r.name()}"></option>
+                    </select>
+                    <span class="field-error" th:errors="*{roundId}"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Ngày giờ bảo vệ <span class="req">*</span></label>
+                    <input type="datetime-local" class="form-control" th:field="*{defenseDate}">
+                    <span class="field-error" th:errors="*{defenseDate}"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phòng họp</label>
+                    <input type="text" class="form-control" th:field="*{location}" placeholder="VD: A1-402">
+                    <span class="field-error" th:errors="*{location}"></span>
+                </div>
+            </div>
+
+            <div class="card" style="background:var(--row-alt);box-shadow:none">
+                <div class="card-title">Thành phần hội đồng (3 - 5 giảng viên)</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Chủ tịch hội đồng <span class="req">*</span></label>
+                        <select class="form-control" th:field="*{chairId}">
+                            <option value="">-- Chọn giảng viên --</option>
+                            <option th:each="l : ${lecturers}" th:value="${l.id}" th:text="${l.fullName + ' (' + l.lecturerCode + ')'}"></option>
+                        </select>
+                        <span class="field-error" th:errors="*{chairId}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Thư ký hội đồng <span class="req">*</span></label>
+                        <select class="form-control" th:field="*{secretaryId}">
+                            <option value="">-- Chọn giảng viên --</option>
+                            <option th:each="l : ${lecturers}" th:value="${l.id}" th:text="${l.fullName + ' (' + l.lecturerCode + ')'}"></option>
+                        </select>
+                        <span class="field-error" th:errors="*{secretaryId}"></span>
+                    </div>
+                </div>
+                <label class="form-label">Ủy viên (chọn 1 đến 3 người)</label>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px;max-height:220px;overflow:auto;background:#fff;border:1px solid var(--border);border-radius:6px;padding:10px">
+                    <label th:each="l : ${lecturers}" style="display:flex;gap:8px;align-items:center">
+                        <input type="checkbox" name="memberIds" th:value="${l.id}" th:checked="${form.memberIds.contains(l.id)}">
+                        <span th:text="${l.fullName + ' (' + l.lecturerCode + ')'}">GV</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card" style="background:var(--row-alt);box-shadow:none">
+                <div class="card-title">Nhóm sinh viên bảo vệ tại hội đồng này</div>
+                <p class="help mb-1">Chỉ hiển thị nhóm đã đăng ký đề tài và chưa thuộc hội đồng khác, thuộc đúng đợt đã chọn ở trên.</p>
+                <div style="display:grid;gap:6px;max-height:260px;overflow:auto;background:#fff;border:1px solid var(--border);border-radius:6px;padding:10px">
+                    <label th:each="g : ${groups}" class="group-option" th:attr="data-round=${g.round.id}" style="display:flex;gap:8px;align-items:flex-start">
+                        <input type="checkbox" name="groupIds" th:value="${g.id}" th:checked="${form.groupIds.contains(g.id)}">
+                        <span><strong th:text="${g.groupName}">Nhóm 01</strong> - <span th:text="${g.topic.code + ': ' + g.topic.title}">DT001</span>
+                            <span class="help" th:text="${g.round.name}">Đợt</span></span>
+                    </label>
+                    <div class="muted" th:if="${#lists.isEmpty(groups)}">Chưa có nhóm nào phù hợp.</div>
+                </div>
+            </div>
+
+            <div class="mt-2 flex gap-1" style="justify-content:flex-end">
+                <a class="btn btn-outline" th:href="@{/admin/councils}">Hủy</a>
+                <button type="submit" class="btn btn-primary" th:disabled="${locked}">Lưu hội đồng</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            var sel = document.getElementById('roundSelect');
+            function filterGroups() {
+                document.querySelectorAll('.group-option').forEach(function (el) {
+                    var match = !sel.value || el.getAttribute('data-round') === sel.value;
+                    el.style.display = match ? 'flex' : 'none';
+                    if (!match) { el.querySelector('input').checked = false; }
+                });
+            }
+            sel.addEventListener('change', filterGroups);
+            filterGroups();
+        })();
+    </script>
+</main>
+</body>
+</html>

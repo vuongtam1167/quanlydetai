@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Nhóm hướng dẫn', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('NHÓM SINH VIÊN HƯỚNG DẪN')}"></div>
+
+    <div class="card" th:each="r : ${rows}">
+        <div class="flex between center-y wrap gap-1" style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:14px">
+            <h3 class="mb-0" style="color:var(--ute-blue)">
+                <span th:text="${r.topicCode()}">DT001</span> - <span th:text="${r.topicTitle()}">Tên đề tài</span>
+            </h3>
+            <div>
+                <span class="badge badge-gray" th:unless="${r.hasGroup()}">Chưa có nhóm đăng ký</span>
+                <span class="badge badge-green" th:if="${r.hasGroup() and r.submitted()}">Đã nộp báo cáo</span>
+                <span class="badge badge-warn" th:if="${r.hasGroup() and !r.submitted()}">Đang thực hiện</span>
+            </div>
+        </div>
+        <p class="help mb-1">
+            Đợt: <strong th:text="${r.roundName()}">KLTN</strong>
+            <span th:if="${!#strings.isEmpty(r.coAdvisor())}"> · GVHD cùng: <strong th:text="${r.coAdvisor()}">GV B</strong></span>
+        </p>
+
+        <div class="grid-2" th:if="${r.hasGroup()}">
+            <div>
+                <h4>Thành viên nhóm: <span style="color:var(--ute-red)" th:text="${r.groupName()}">Nhóm 01</span></h4>
+                <ul style="padding-left:20px;margin:0">
+                    <li th:each="m : ${r.members()}">
+                        <span th:text="${m.studentCode() + ' - ' + m.fullName()}">21110001 - Nguyễn Văn A</span>
+                        <strong style="color:var(--ute-blue)" th:if="${m.leader()}">(Nhóm trưởng)</strong>
+                    </li>
+                </ul>
+            </div>
+            <div style="background:var(--row-alt);border-radius:6px;padding:14px">
+                <h4 class="mt-0">Tài nguyên nộp bài</h4>
+                <p class="muted mb-0" th:unless="${r.submitted()}">Nhóm chưa nộp tài nguyên.</p>
+                <th:block th:if="${r.submitted()}">
+                    <p><strong>Báo cáo:</strong> <a th:href="${r.reportUrl()}" target="_blank" rel="noopener">Mở báo cáo</a></p>
+                    <p th:if="${r.sourceUrl() != null}"><strong>Mã nguồn:</strong> <a th:href="${r.sourceUrl()}" target="_blank" rel="noopener">Xem mã nguồn</a></p>
+                    <p class="mb-0" th:if="${r.notes() != null}"><strong>Ghi chú:</strong> <span th:text="${r.notes()}"></span></p>
+                </th:block>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" th:if="${#lists.isEmpty(rows)}">
+        <div th:replace="~{fragments/components :: empty('Thầy/Cô chưa hướng dẫn đề tài nào.')}"></div>
+    </div>
+</main>
+</body>
+</html>

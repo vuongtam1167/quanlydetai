@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Thông báo', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('QUẢN LÝ THÔNG BÁO')}"></div>
+
+    <div class="grid-2" style="grid-template-columns:1fr 1.6fr;align-items:start">
+        <div class="card">
+            <div class="card-title"
+                th:text="${form.id == null} ? 'Đăng thông báo mới' : 'Sửa thông báo'">
+                Đăng thông báo mới
+            </div>
+
+            <form th:action="@{/admin/announcements/save}" th:object="${form}" method="post">
+                <input type="hidden" th:field="*{id}">
+                <div class="form-group">
+                    <label class="form-label">Tiêu đề <span class="req">*</span></label>
+                    <input type="text" class="form-control" th:field="*{title}">
+                    <span class="field-error" th:errors="*{title}"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nội dung <span class="req">*</span></label>
+                    <textarea class="form-control" rows="6" th:field="*{content}"></textarea>
+                    <span class="field-error" th:errors="*{content}"></span>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" th:field="*{pinned}"> Ghim thông báo lên đầu trang chủ</label>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                        th:text="${form.id == null} ? 'Đăng thông báo' : 'Lưu thay đổi'">
+                    Đăng thông báo
+                </button>
+                <a th:if="${form.id != null}" class="btn btn-outline"
+                th:href="@{/admin/announcements}">Hủy sửa</a>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Các thông báo đã đăng</div>
+            <div class="table-wrap">
+                <table class="ute-table">
+                    <thead><tr><th>Tiêu đề</th><th>Ngày đăng</th><th>Thao tác</th></tr></thead>
+                    <tbody>
+                    <tr th:each="a : ${announcements}">
+                        <td><span th:if="${a.pinned}">📌 </span><span th:text="${a.title}">Tiêu đề</span></td>
+                        <td th:text="${#temporals.format(a.createdAt, 'dd/MM/yyyy HH:mm')}" style="white-space:nowrap">01/01/2026</td>
+                        <td style="white-space:nowrap">
+                            <form th:action="@{/admin/announcements/{id}/pin(id=${a.id})}" method="post" style="display:inline">
+                                <button type="submit" class="btn btn-outline btn-sm" th:text="${a.pinned} ? 'Bỏ ghim' : 'Ghim'">Ghim</button>
+                            </form>
+                            <a class="btn btn-outline btn-sm" th:href="@{/admin/announcements/{id}/edit(id=${a.id})}">Sửa</a>
+                            <form th:action="@{/admin/announcements/{id}/delete(id=${a.id})}" method="post" style="display:inline"
+                                  data-confirm="Xóa thông báo này?">
+                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(announcements)}"><td colspan="3" class="text-center muted" style="padding:28px">Chưa có thông báo nào.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

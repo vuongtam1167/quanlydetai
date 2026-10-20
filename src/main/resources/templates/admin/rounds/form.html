@@ -1,75 +1,137 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Thiết lập Đợt Đăng Ký</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .err { color: #dc3545; font-size: 0.875em; }
-    </style>
-</head>
-<body class="bg-light">
-    <div th:replace="~{fragments/navbar :: navbar}"></div>
-
-    <div class="container mt-4">
-        <div class="card shadow-sm border-0" style="max-width: 800px; margin: auto;">
-            <div class="card-header bg-primary text-white py-3">
-                <h4 class="mb-0 fw-bold">Thiết Lập Đợt Đăng Ký Mới</h4>
-            </div>
-            <div class="card-body p-4">
-                <form th:object="${round}" method="post" th:action="@{/admin/rounds}">
-                    
-                    <div class="row mb-4">
-                        <div class="col-md-8">
-                            <label class="form-label fw-bold">Tên đợt đăng ký</label>
-                            <input type="text" class="form-control" th:field="*{name}" placeholder="VD: Khóa luận tốt nghiệp HK1 2026-2027">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Loại đề tài</label>
-                            <select class="form-select" th:field="*{type}">
-                                <option value="MON_HOC">Môn học</option>
-                                <option value="NCKH">Nghiên cứu khoa học</option>
-                                <option value="TLCN">Tiểu luận chuyên ngành</option>
-                                <option value="KLTN">Khóa luận tốt nghiệp</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-info border-0 shadow-sm p-3 mb-4">
-                        <h6 class="fw-bold mb-3 text-primary">Giai đoạn 1: Giảng viên đề xuất đề tài</h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Ngày bắt đầu GĐ1</label>
-                                <input type="datetime-local" class="form-control" th:field="*{lecturerStartDate}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Ngày kết thúc GĐ1</label>
-                                <input type="datetime-local" class="form-control" th:field="*{lecturerEndDate}">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-success border-0 shadow-sm p-3 mb-4">
-                        <h6 class="fw-bold mb-3 text-success">Giai đoạn 2: Sinh viên đăng ký nhóm</h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Ngày bắt đầu GĐ2</label>
-                                <input type="datetime-local" class="form-control" th:field="*{studentStartDate}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Ngày kết thúc GĐ2</label>
-                                <input type="datetime-local" class="form-control" th:field="*{studentEndDate}">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end border-top pt-3">
-                        <a th:href="@{/admin/rounds}" class="btn btn-secondary me-2 fw-bold">Hủy</a>
-                        <button type="submit" class="btn btn-primary fw-bold">Tạo Đợt Đăng Ký</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Đợt đăng ký', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1 th:text="${form.id == null} ? 'TẠO ĐỢT ĐĂNG KÝ MỚI' : 'SỬA ĐỢT ĐĂNG KÝ'">TẠO ĐỢT ĐĂNG KÝ MỚI</h1>
     </div>
+
+    <div class="alert alert-danger" th:if="${formError}" th:text="${formError}"></div>
+
+    <div class="card" style="max-width:920px">
+        <form th:action="@{/admin/rounds/save}" th:object="${form}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="form-group">
+                <label class="form-label">Tên đợt đăng ký <span class="req">*</span></label>
+                <input type="text" class="form-control" th:field="*{name}" placeholder="VD: Khóa luận tốt nghiệp Học kỳ 2 (2026 - 2027)">
+                <span class="field-error" th:errors="*{name}"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Loại đợt <span class="req">*</span></label>
+                <select class="form-control" th:field="*{type}" id="roundType">
+                    <option th:each="t : ${typeLabels}" th:value="${t.key}" th:text="${t.value}"></option>
+                </select>
+                <span class="field-error" th:errors="*{type}"></span>
+            </div>
+
+            <div class="grid-2">
+                <div class="card" style="border-style:dashed;margin:0">
+                    <div class="card-title">Giai đoạn 1 - Giảng viên đề xuất &amp; duyệt</div>
+                    <div class="form-group">
+                        <label class="form-label">Từ <span class="req">*</span></label>
+                        <input type="datetime-local" class="form-control" th:field="*{lecturerStartDate}">
+                        <span class="field-error" th:errors="*{lecturerStartDate}"></span>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label class="form-label">Đến <span class="req">*</span></label>
+                        <input type="datetime-local" class="form-control" th:field="*{lecturerEndDate}">
+                        <span class="field-error" th:errors="*{lecturerEndDate}"></span>
+                    </div>
+                </div>
+                <div class="card" style="border-style:dashed;margin:0">
+                    <div class="card-title">Giai đoạn 2 - Sinh viên đăng ký</div>
+                    <div class="form-group">
+                        <label class="form-label">Từ <span class="req">*</span></label>
+                        <input type="datetime-local" class="form-control" th:field="*{studentStartDate}">
+                        <span class="field-error" th:errors="*{studentStartDate}"></span>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label class="form-label">Đến <span class="req">*</span></label>
+                        <input type="datetime-local" class="form-control" th:field="*{studentEndDate}">
+                        <span class="field-error" th:errors="*{studentEndDate}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="specialConfig" class="alert alert-warning mt-2" hidden>
+                <strong>⚡ Cấu hình đặc thù theo quy chế Khoa</strong>
+                <div class="grid-2 mt-1">
+                    <div id="reviewerBox" hidden>
+                        <label class="form-label">Hạn chót GVPB nộp điểm <span class="req">*</span></label>
+                        <input type="datetime-local" class="form-control" th:field="*{reviewerDeadline}">
+                    </div>
+                    <div id="councilBox" hidden>
+                        <label class="form-label">Ngày báo cáo hội đồng <span class="req">*</span></label>
+                        <input type="datetime-local" class="form-control" th:field="*{councilReportDate}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3 flex gap-1" style="justify-content:flex-end">
+                <a class="btn btn-outline" th:href="@{/admin/rounds}">Hủy</a>
+                <button type="submit" class="btn btn-primary">Lưu đợt đăng ký</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            var sel = document.getElementById('roundType');
+            var box = document.getElementById('specialConfig');
+            var rev = document.getElementById('reviewerBox');
+            var cou = document.getElementById('councilBox');
+            var phase2End = document.getElementById('studentEndDate');
+            var reviewerDate = document.getElementById('reviewerDeadline');
+            var councilDate = document.getElementById('councilReportDate');
+            function plusOneMinute(value) {
+                if (!value) return '';
+                var date = new Date(value);
+                if (Number.isNaN(date.getTime())) return '';
+                date.setMinutes(date.getMinutes() + 1);
+                var pad = function (n) { return String(n).padStart(2, '0'); };
+                return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-'
+                    + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+            }
+            function syncDateBounds() {
+                var minimum = plusOneMinute(phase2End.value);
+                if (minimum) {
+                    reviewerDate.min = minimum;
+                    councilDate.min = minimum;
+                } else {
+                    reviewerDate.removeAttribute('min');
+                    councilDate.removeAttribute('min');
+                }
+                if (sel.value === 'KLTN' && councilDate.value) {
+                    reviewerDate.max = councilDate.value;
+                } else {
+                    reviewerDate.removeAttribute('max');
+                }
+                if (sel.value === 'KLTN' && reviewerDate.value
+                        && (!minimum || reviewerDate.value > minimum)) {
+                    councilDate.min = reviewerDate.value;
+                }
+            }
+            function sync() {
+                var t = sel.value;
+                var needRev = (t === 'TLCN' || t === 'KLTN');
+                var needCou = (t === 'KLTN');
+                rev.hidden = !needRev;
+                cou.hidden = !needCou;
+                box.hidden = !(needRev || needCou);
+                rev.querySelector('input').required = needRev;
+                cou.querySelector('input').required = needCou;
+                syncDateBounds();
+            }
+            sel.addEventListener('change', sync);
+            phase2End.addEventListener('input', syncDateBounds);
+            reviewerDate.addEventListener('input', syncDateBounds);
+            councilDate.addEventListener('input', syncDateBounds);
+            sync();
+        })();
+    </script>
+</main>
 </body>
 </html>

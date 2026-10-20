@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Chấm điểm hội đồng', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('KHÔNG GIAN CHẤM ĐIỂM HỘI ĐỒNG')}"></div>
+
+    <div class="card" th:each="c : ${councils}">
+        <div class="flex between center-y wrap gap-1" style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:14px">
+            <div>
+                <h3 class="mb-0" style="color:var(--ute-blue)" th:text="${c.name()}">Hội đồng 1</h3>
+                <div class="help">
+                    <span th:text="${c.roundName()}">KLTN</span> ·
+                    <span th:text="${#temporals.format(c.defenseDate(), 'dd/MM/yyyy HH:mm')}">25/05/2026 08:00</span> ·
+                    <span th:text="${c.location()}">A1-402</span>
+                </div>
+            </div>
+            <div>
+                <span class="badge badge-blue" th:text="${c.myRoleLabel()}">Ủy viên</span>
+                <span class="badge" th:classappend="${c.statusClass()}" th:text="${c.statusLabel()}">Đang chấm điểm</span>
+            </div>
+        </div>
+
+        <div class="card" style="background:#fbfcfd;box-shadow:none" th:each="g : ${c.groups()}">
+            <div class="flex between center-y wrap gap-1 mb-1">
+                <h4 class="mb-0"><span th:text="${g.groupName()}">Nhóm 01</span> - <span th:text="${g.topicCode() + ': ' + g.topicTitle()}">DT001</span></h4>
+                <span class="badge badge-green" th:if="${g.scoredByMe()}">Thầy/Cô đã chấm</span>
+            </div>
+            <p class="help mb-1">
+                Sinh viên:
+                <span th:each="m, st : ${g.members()}"><span th:text="${m.fullName()}">Nguyễn Văn A</span><span th:if="${m.leader()}"> (NT)</span><span th:if="${!st.last}">, </span></span>
+                <span th:if="${g.submitted()}"> ·
+                    <a th:href="${g.reportUrl()}" target="_blank" rel="noopener">Báo cáo</a>
+                    <th:block th:if="${g.sourceUrl() != null}"> · <a th:href="${g.sourceUrl()}" target="_blank" rel="noopener">Mã nguồn</a></th:block>
+                </span>
+            </p>
+
+            <div class="grid-2">
+                <div style="background:var(--row-alt);border-radius:6px;padding:14px">
+                    <h4 class="mt-0" th:text="${c.chair()} ? 'Phiếu chấm của Chủ tịch' : 'Phiếu chấm cá nhân của Thầy/Cô'">Phiếu chấm</h4>
+                    <div class="alert alert-warning mb-0" th:if="${g.conflict()}">Thầy/Cô là GV hướng dẫn của đề tài này nên không được chấm điểm.</div>
+                    <form th:if="${!g.conflict() and !c.completed()}" th:action="@{/lecturer/councils/groups/{id}/score(id=${g.groupId()})}" method="post">
+                        <label class="form-label">Điểm thành phần (thang 10) <span class="req">*</span></label>
+                        <input type="number" step="0.25" min="0" max="10" name="score" class="form-control" style="width:160px;margin-bottom:10px"
+                               th:value="${g.myScore()}" required>
+                        <label class="form-label" th:text="${c.chair()} ? 'Nhận xét tổng hợp của Hội đồng (sinh viên sẽ xem)' : 'Nhận xét (tùy chọn)'">Nhận xét</label>
+                        <textarea name="comments" class="form-control" rows="3" style="margin-bottom:10px" th:text="${g.myComments()}"></textarea>
+                        <button type="submit" class="btn btn-primary btn-sm" th:text="${g.scoredByMe()} ? 'Cập nhật phiếu' : 'Lưu phiếu chấm'">Lưu</button>
+                    </form>
+                    <div th:if="${!g.conflict() and c.completed()}">
+                        <p class="mb-0"><strong>Điểm của Thầy/Cô:</strong> <span th:text="${g.myScore() != null} ? ${g.myScore()} : 'chưa chấm'">8.50</span></p>
+                    </div>
+                </div>
+
+                <div th:if="${c.chair()}" style="background:#fff1f2;border:1px solid var(--ute-red);border-radius:6px;padding:14px">
+                    <h4 class="mt-0" style="color:var(--ute-red)">👑 Tổng hợp của Chủ tịch</h4>
+                    <table class="ute-table" style="font-size:13px">
+                        <thead><tr><th>Thành viên</th><th>Vai trò</th><th>Điểm</th></tr></thead>
+                        <tbody>
+                        <tr th:each="s : ${g.scores()}">
+                            <td th:text="${s.lecturerName()}">GV A</td>
+                            <td th:text="${s.roleLabel()}">Ủy viên</td>
+                            <td><span th:if="${s.score() != null}" th:text="${s.score()}">8.50</span><span class="muted" th:if="${s.score() == null}">chưa chấm</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p class="mt-1 mb-0">Điểm trung bình hội đồng:
+                        <strong style="font-size:18px;color:var(--ute-red)" th:if="${g.average() != null}" th:text="${g.average()}">8.50</strong>
+                        <span class="muted" th:if="${g.average() == null}">chưa có</span>
+                        <span class="help" th:text="'(' + ${g.scoredCount()} + '/' + ${g.totalMembers()} + ' phiếu)'"></span>
+                    </p>
+                </div>
+                <div th:if="${!c.chair()}" class="muted text-center" style="padding:14px"><em>Chỉ Chủ tịch hội đồng xem được bảng tổng hợp điểm.</em></div>
+            </div>
+        </div>
+
+        <div class="muted" th:if="${#lists.isEmpty(c.groups())}">Hội đồng chưa được phân nhóm nào.</div>
+
+        <div th:if="${c.chair()}" class="mt-2" style="text-align:right">
+            <form th:if="${!c.completed()}" th:action="@{/lecturer/councils/{id}/complete(id=${c.councilId()})}" method="post"
+                  data-confirm="Hoàn tất hội đồng? Sau đó các thành viên không thể sửa điểm nữa.">
+                <button type="submit" class="btn btn-danger" th:disabled="${!c.readyToComplete()}">🔒 Hoàn tất hội đồng &amp; nộp kết quả về Khoa</button>
+                <div class="help mt-1" th:if="${!c.readyToComplete()}">Cần đủ điểm của tất cả thành viên cho mọi nhóm trước khi hoàn tất.</div>
+            </form>
+            <span class="badge badge-green" th:if="${c.completed()}">✔ Hội đồng đã hoàn tất</span>
+        </div>
+    </div>
+
+    <div class="card" th:if="${#lists.isEmpty(councils)}">
+        <div th:replace="~{fragments/components :: empty('Thầy/Cô chưa tham gia hội đồng nào.')}"></div>
+    </div>
+</main>
+</body>
+</html>

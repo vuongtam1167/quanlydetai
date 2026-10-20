@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface TopicAdvisorRepository extends JpaRepository<TopicAdvisor, Long> {
     List<TopicAdvisor> findByTopicId(Long topicId);
+    boolean existsByLecturerId(Long lecturerId);
+    List<TopicAdvisor> findByLecturerId(Long lecturerId);
+    void deleteByTopicId(Long topicId);
 }

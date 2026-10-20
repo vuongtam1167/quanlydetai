@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Sinh viên', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1>DANH MỤC SINH VIÊN</h1>
+        <div class="actions"><a class="btn btn-primary" th:href="@{/admin/students/new}">+ Thêm sinh viên</a></div>
+    </div>
+    <div class="card">
+        <form method="get" th:action="@{/admin/students}" class="flex gap-1 wrap mb-2">
+            <input type="search" name="q" th:value="${q}" class="form-control" style="max-width:360px" placeholder="Tìm theo MSSV, họ tên, lớp...">
+            <button type="submit" class="btn btn-primary">Tìm</button>
+        </form>
+        <div class="table-wrap">
+            <table class="ute-table">
+                <thead><tr><th>MSSV</th><th>Họ và tên</th><th>Lớp</th><th>Email</th><th>SĐT</th><th>Tài khoản</th><th>Thao tác</th></tr></thead>
+                <tbody>
+                <tr th:each="s : ${students}">
+                    <td><strong th:text="${s.studentCode}">21110001</strong></td>
+                    <td th:text="${s.fullName}">Nguyễn Văn A</td>
+                    <td th:text="${s.className}">21110CL1</td>
+                    <td th:text="${s.email}">a@student.hcmute.edu.vn</td>
+                    <td th:text="${s.phone}">0900000000</td>
+                    <td><span th:text="${s.user.username}">sv01</span>
+                        <span class="badge badge-red" th:if="${!s.user.enabled}">Đã khóa</span></td>
+                    <td style="white-space:nowrap">
+                        <a class="btn btn-outline btn-sm" th:href="@{/admin/students/{id}/edit(id=${s.id})}">Sửa</a>
+                        <form th:action="@{/admin/students/{id}/delete(id=${s.id})}" method="post" style="display:inline"
+                              data-confirm="Xóa sinh viên này cùng tài khoản đăng nhập?">
+                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(students)}"><td colspan="7" class="text-center muted" style="padding:28px">Không có sinh viên phù hợp.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

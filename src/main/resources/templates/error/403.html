@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Không có quyền truy cập', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: errorBox('403', 'Bạn không có quyền truy cập', 'Tài khoản của bạn không được phép sử dụng chức năng này.')}"></div>
+</main>
+</body>
+</html>

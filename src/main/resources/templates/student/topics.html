@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Đăng ký đề tài', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('ĐĂNG KÝ ĐỀ TÀI (GIAI ĐOẠN 2)')}"></div>
+
+    <div class="card" th:if="${#lists.isEmpty(options)}">
+        <div th:replace="~{fragments/components :: empty('Hiện chưa có đợt đăng ký nào đang mở.')}"></div>
+    </div>
+
+    <th:block th:if="${pageData != null}">
+        <div class="card">
+            <form method="get" th:action="@{/student/topics}" class="flex gap-1 wrap center-y">
+                <label class="form-label mb-0">Đợt:</label>
+                <select name="roundId" class="form-control" style="width:320px" onchange="this.form.submit()">
+                    <option th:each="o : ${options}" th:value="${o.id()}" th:selected="${o.id() == roundId}"
+                            th:text="${o.name() + ' [' + o.typeLabel() + ']'}"></option>
+                </select>
+                <input type="search" name="q" th:value="${q}" class="form-control" style="width:240px" placeholder="Tìm đề tài, mã, GVHD...">
+                <select name="departmentId" class="form-control" style="width:220px" onchange="this.form.submit()">
+                    <option value="">Tất cả bộ môn</option>
+                    <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.name}" th:selected="${d.id == departmentId}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary">Tìm</button>
+            </form>
+            <div class="mt-1">
+                <span class="badge" th:classappend="${pageData.windowOpen()} ? 'badge-green' : 'badge-gray'" th:text="${pageData.windowState()}">Đang mở đăng ký</span>
+                <span class="help" th:text="'Thời gian đăng ký: ' + ${#temporals.format(pageData.windowStart(), 'dd/MM/yyyy HH:mm')} + ' → ' + ${#temporals.format(pageData.windowEnd(), 'dd/MM/yyyy HH:mm')}"></span>
+            </div>
+        </div>
+
+        <div class="alert alert-warning" th:if="${!pageData.hasGroup()}">
+            Bạn chưa có nhóm trong đợt này. <a th:href="@{/student/group(roundId=${roundId})}">Lập nhóm tại đây</a> trước khi đăng ký đề tài.
+        </div>
+
+        <div class="alert alert-success" th:if="${pageData.hasGroup() and pageData.group().topicRegistered()}">
+            <div class="flex between center-y wrap gap-1">
+                <div>🎉 Nhóm <strong th:text="${pageData.group().name()}">Nhóm</strong> đã đăng ký đề tài:
+                    <strong th:text="${pageData.group().topicCode() + ' - ' + pageData.group().topicTitle()}">DT001 - Tên đề tài</strong></div>
+                <form th:if="${pageData.group().iAmLeader() and pageData.windowOpen()}"
+                      th:action="@{/student/topics/cancel/{g}(g=${pageData.group().id()})}" method="post"
+                      data-confirm="Hủy đăng ký đề tài hiện tại?">
+                    <input type="hidden" name="roundId" th:value="${roundId}">
+                    <button type="submit" class="btn btn-danger btn-sm">Hủy đăng ký</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="alert alert-info" th:if="${pageData.hasGroup() and !pageData.group().topicRegistered() and !pageData.group().iAmLeader()}">
+            Chỉ tài khoản <strong>nhóm trưởng</strong> mới được bấm đăng ký đề tài cho nhóm.
+        </div>
+        <div class="alert alert-warning" th:if="${pageData.hasGroup() and !pageData.group().topicRegistered() and !pageData.group().enoughMembers()}"
+             th:text="'Nhóm cần từ ' + ${pageData.group().minMembers()} + ' đến ' + ${pageData.group().maxMembers()} + ' thành viên mới đăng ký được (hiện có ' + ${pageData.group().size()} + ').'"></div>
+
+        <div class="card">
+            <div class="table-wrap">
+                <table class="ute-table">
+                    <thead><tr><th>Mã</th><th>Tên đề tài</th><th>Bộ môn</th><th>GV hướng dẫn</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                    <tbody>
+                    <tr th:each="t : ${pageData.topics()}">
+                        <td><strong th:text="${t.code()}">DT001</strong></td>
+                        <td>
+                            <strong th:text="${t.title()}">Tên đề tài</strong>
+                            <details th:if="${t.description() != null}">
+                                <summary class="help" style="cursor:pointer">Xem mô tả</summary>
+                                <div style="white-space:pre-wrap" th:text="${t.description()}"></div>
+                                <div class="help" style="white-space:pre-wrap" th:if="${t.requirements() != null}" th:text="'Yêu cầu: ' + ${t.requirements()}"></div>
+                            </details>
+                        </td>
+                        <td th:text="${t.departmentName()}">CNPM</td>
+                        <td th:text="${t.advisors()}">GV A</td>
+                        <td>
+                            <span class="badge badge-blue" th:if="${t.takenByMyGroup()}">Nhóm bạn đã chọn</span>
+                            <span class="badge badge-gray" th:if="${t.taken() and !t.takenByMyGroup()}">Đã có nhóm chọn</span>
+                            <span class="badge badge-green" th:unless="${t.taken()}">Còn trống</span>
+                        </td>
+                        <td>
+                            <form th:if="${!t.taken() and pageData.hasGroup() and pageData.group().iAmLeader() and !pageData.group().topicRegistered() and pageData.group().enoughMembers() and pageData.windowOpen()}"
+                                  th:action="@{/student/topics/{id}/register(id=${t.id()})}" method="post"
+                                  data-confirm="Đăng ký đề tài này cho nhóm?">
+                                <input type="hidden" name="roundId" th:value="${roundId}">
+                                <button type="submit" class="btn btn-primary btn-sm">Đăng ký cho nhóm</button>
+                            </form>
+                            <button type="button" class="btn btn-outline btn-sm" disabled
+                                    th:unless="${!t.taken() and pageData.hasGroup() and pageData.group().iAmLeader() and !pageData.group().topicRegistered() and pageData.group().enoughMembers() and pageData.windowOpen()}">Không thể đăng ký</button>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(pageData.topics())}"><td colspan="6" class="text-center muted" style="padding:28px">Chưa có đề tài nào được phê duyệt trong đợt này (hoặc không khớp bộ lọc).</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </th:block>
+</main>
+</body>
+</html>

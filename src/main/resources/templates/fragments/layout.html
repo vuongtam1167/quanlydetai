@@ -1,0 +1,146 @@
+<!doctype html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  th:fragment="layout(title, content)"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${title} + ' | HCM-UTE'">HCM-UTE</title>
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}" />
+    <link rel="stylesheet" th:href="@{/css/ute.css}" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- ============ SIDEBAR ============ -->
+      <aside class="sidebar" id="sidebar">
+        <a class="sidebar-brand" th:href="@{/}">
+          <img th:src="@{/images/logo.png}" alt="HCM-UTE" />
+          <span>KHOA CÔNG NGHỆ THÔNG TIN</span>
+        </a>
+
+        <div class="sidebar-user" th:if="${me != null}">
+          <div class="avatar" th:text="${me.initial()}">A</div>
+          <div class="sidebar-user-info">
+            <strong th:text="${me.displayName()}">Họ và tên</strong>
+            <span th:text="${me.code() + ' - ' + me.roleLabel()}"
+              >Mã - Vai trò</span
+            >
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" th:if="${menu != null}">
+          <th:block th:each="group : ${menu}">
+            <div class="menu-group" th:text="${group.title()}">NHÓM</div>
+            <th:block th:each="item : ${group.items()}">
+              <a
+                th:if="${item.ready()}"
+                class="menu-item"
+                th:classappend="${item.isActive(currentPath)} ? 'active'"
+                th:href="@{${item.url()}}"
+              >
+                <span class="menu-icon" th:text="${item.icon()}">•</span>
+                <span th:text="${item.label()}">Mục menu</span>
+              </a>
+              <span
+                th:unless="${item.ready()}"
+                class="menu-item disabled"
+                title="Chức năng đang được hoàn thiện"
+              >
+                <span class="menu-icon" th:text="${item.icon()}">•</span>
+                <span th:text="${item.label()}">Mục menu</span>
+                <em>Sắp có</em>
+              </span>
+            </th:block>
+          </th:block>
+        </nav>
+      </aside>
+      <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+      <!-- ============ KHU VỰC CHÍNH ============ -->
+      <div class="main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button
+              type="button"
+              class="burger"
+              id="sidebar-toggle"
+              aria-label="Mở menu"
+            >
+              ☰
+            </button>
+            <div class="topbar-title">
+              Trường Đại học Công nghệ Kỹ thuật TP.HCM
+            </div>
+          </div>
+          <div class="topbar-right" th:if="${me != null}">
+            <a class="bell" th:href="@{/}" title="Thông báo" style="color: #fff"
+              >🔔</a
+            >
+            <details class="user-menu">
+              <summary>
+                <span class="avatar" th:text="${me.initial()}">A</span>
+                <span class="user-menu-name" th:text="${me.displayName()}"
+                  >Họ và tên</span
+                >
+              </summary>
+              <div class="user-menu-panel">
+                <div class="who">
+                  <strong th:text="${me.displayName()}">Họ và tên</strong>
+                  <span
+                    class="muted"
+                    th:text="${me.roleLabel() + ' · ' + me.username()}"
+                    >Vai trò</span
+                  >
+                </div>
+                <form th:action="@{/logout}" method="post">
+                  <button type="submit" class="user-menu-logout">
+                    ⎋ Đăng xuất
+                  </button>
+                </form>
+              </div>
+            </details>
+          </div>
+          <div class="topbar-right" th:if="${me == null}">
+            <a th:href="@{/login}" style="color: #fff; font-weight: 600"
+              >Đăng nhập</a
+            >
+          </div>
+        </header>
+
+        <div class="content">
+          <div
+            class="alert alert-success"
+            data-autoclose
+            th:if="${flashSuccess}"
+            th:text="${flashSuccess}"
+          >
+            Thành công
+          </div>
+          <div
+            class="alert alert-danger"
+            th:if="${flashError}"
+            th:text="${flashError}"
+          >
+            Có lỗi xảy ra
+          </div>
+          <div
+            class="alert alert-warning"
+            th:if="${flashWarning}"
+            th:text="${flashWarning}"
+          >
+            Cảnh báo
+          </div>
+
+          <th:block th:replace="${content}"></th:block>
+        </div>
+
+        <footer class="footer">
+          © Khoa Công nghệ Thông tin - HCM-UTE · Hệ thống quản lý đề tài
+        </footer>
+      </div>
+    </div>
+    <script th:src="@{/js/ute.js}"></script>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Nộp báo cáo', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('NỘP BÁO CÁO &amp; MÃ NGUỒN')}"></div>
+
+    <div class="card" th:if="${#lists.isEmpty(options)}">
+        <div th:replace="~{fragments/components :: empty('Bạn chưa có nhóm trong đợt đăng ký nào.')}"></div>
+    </div>
+
+    <th:block th:if="${!#lists.isEmpty(options)}">
+        <form method="get" th:action="@{/student/submission}" class="flex gap-1 wrap center-y mb-2">
+            <label class="form-label mb-0">Đợt đăng ký:</label>
+            <select name="roundId" class="form-control" style="width:360px" onchange="this.form.submit()">
+                <option th:each="o : ${options}" th:value="${o.id()}" th:selected="${o.id() == roundId}"
+                        th:text="${o.name() + ' [' + o.typeLabel() + ']'}"></option>
+            </select>
+        </form>
+
+        <div class="card" th:if="${sub != null and !sub.hasTopic()}" style="text-align:center;padding:30px">
+            <p class="muted mb-0">Nhóm <strong th:text="${sub.groupName()}">Nhóm</strong> chưa đăng ký đề tài nên chưa thể nộp báo cáo.</p>
+        </div>
+
+        <div class="card" th:if="${sub != null and sub.hasTopic()}" style="max-width:760px">
+            <h3 class="mt-0">Đề tài: <span style="color:var(--ute-blue)" th:text="${sub.topicCode() + ' - ' + sub.topicTitle()}">DT001 - Tên đề tài</span></h3>
+            <p>Nhóm: <strong th:text="${sub.groupName()}">Nhóm 01</strong> · GVHD: <strong th:text="${sub.advisors()}">GV A</strong></p>
+
+            <div class="alert alert-warning" th:if="${!sub.iAmLeader()}">Việc nộp báo cáo chỉ có thể được thực hiện bởi <strong>nhóm trưởng</strong>.</div>
+            <div class="alert alert-info" th:if="${sub.locked()}">Khoa đã công bố kết quả của đợt này nên không thể nộp thêm.</div>
+
+            <form th:if="${sub.iAmLeader() and !sub.locked()}" th:action="@{/student/submission/save}" method="post">
+                <input type="hidden" name="groupId" th:value="${sub.groupId()}">
+                <input type="hidden" name="roundId" th:value="${roundId}">
+                <div class="form-group">
+                    <label class="form-label">Liên kết báo cáo toàn văn (PDF/Docx trên Google Drive...) <span class="req">*</span></label>
+                    <input type="url" name="reportUrl" class="form-control" required th:value="${sub.reportUrl()}" placeholder="https://drive.google.com/...">
+                    <span class="help">Hãy bật quyền "Bất kỳ ai có đường liên kết đều có thể xem".</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Liên kết mã nguồn (GitHub / GitLab / Drive)</label>
+                    <input type="url" name="sourceUrl" class="form-control" th:value="${sub.sourceUrl()}" placeholder="https://github.com/...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ghi chú cho giảng viên (tùy chọn)</label>
+                    <textarea name="notes" class="form-control" rows="3" th:text="${sub.notes()}"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" th:text="${sub.submitted()} ? 'CẬP NHẬT BÀI NỘP' : 'NỘP BÁO CÁO'">NỘP BÁO CÁO</button>
+            </form>
+
+            <div th:if="${!sub.iAmLeader() or sub.locked()}" style="background:var(--row-alt);padding:14px;border-radius:6px">
+                <p th:if="${!sub.submitted()}" class="muted mb-0">Nhóm chưa nộp tài nguyên.</p>
+                <th:block th:if="${sub.submitted()}">
+                    <p><strong>Trạng thái:</strong> <span class="badge badge-green">Nhóm đã nộp bài</span></p>
+                    <p><strong>Báo cáo:</strong> <a th:href="${sub.reportUrl()}" target="_blank" rel="noopener">Xem file</a></p>
+                    <p th:if="${sub.sourceUrl() != null}"><strong>Mã nguồn:</strong> <a th:href="${sub.sourceUrl()}" target="_blank" rel="noopener">Xem mã nguồn</a></p>
+                </th:block>
+            </div>
+        </div>
+    </th:block>
+</main>
+</body>
+</html>

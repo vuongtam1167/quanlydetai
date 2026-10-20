@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Đề xuất đề tài', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1 th:text="${form.id == null} ? 'ĐỀ XUẤT ĐỀ TÀI MỚI (GIAI ĐOẠN 1)' : 'SỬA ĐỀ TÀI'">ĐỀ XUẤT ĐỀ TÀI MỚI</h1>
+    </div>
+
+    <div class="alert alert-danger" th:if="${formError}" th:text="${formError}"></div>
+    <div class="alert alert-warning" th:if="${#lists.isEmpty(rounds)}">Hiện không có đợt nào đang trong thời gian giảng viên đề xuất đề tài nên chưa thể gửi đề tài.</div>
+
+    <div class="card" style="max-width:860px">
+        <form th:action="@{/lecturer/topics/save}" th:object="${form}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Chọn đợt đăng ký <span class="req">*</span></label>
+                    <select class="form-control" th:field="*{roundId}">
+                        <option value="">-- Chọn đợt đang mở Giai đoạn 1 --</option>
+                        <option th:each="r : ${rounds}" th:value="${r.id}" th:text="${r.name}"></option>
+                    </select>
+                    <span class="field-error" th:errors="*{roundId}"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bộ môn quản lý <span class="req">*</span></label>
+                    <select class="form-control" th:field="*{departmentId}">
+                        <option value="">-- Chọn bộ môn --</option>
+                        <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.name}"></option>
+                    </select>
+                    <span class="field-error" th:errors="*{departmentId}"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Tên đề tài <span class="req">*</span></label>
+                <input type="text" class="form-control" th:field="*{title}" placeholder="Nhập tên đề tài chính xác...">
+                <span class="field-error" th:errors="*{title}"></span>
+            </div>
+
+            <div class="card" style="background:var(--row-alt);box-shadow:none;border-style:dashed">
+                <div class="card-title">Giảng viên hướng dẫn (tối thiểu 1, tối đa 2)</div>
+                <div class="form-group">
+                    <label class="form-label">GVHD 1 (là bạn)</label>
+                    <input type="text" class="form-control" th:value="${advisor1Name}" disabled>
+                </div>
+                <div class="form-group mb-0">
+                    <label class="form-label">GVHD 2 (tùy chọn)</label>
+                    <select class="form-control" th:field="*{advisor2Id}">
+                        <option value="">-- Để trống nếu chỉ có 1 GVHD --</option>
+                        <option th:each="l : ${lecturers}" th:value="${l.id}" th:text="${l.fullName + ' - ' + l.department.name}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Mục tiêu và nội dung đề tài <span class="req">*</span></label>
+                <textarea class="form-control" rows="5" th:field="*{description}" placeholder="Mục tiêu, phạm vi, chức năng cốt lõi..."></textarea>
+                <span class="field-error" th:errors="*{description}"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Yêu cầu đối với sinh viên</label>
+                <textarea class="form-control" rows="3" th:field="*{requirements}" placeholder="Công nghệ sử dụng, kiến thức cần có, số lượng sinh viên..."></textarea>
+            </div>
+
+            <div class="flex gap-1" style="justify-content:flex-end">
+                <a class="btn btn-outline" th:href="@{/lecturer/topics}">Hủy</a>
+                <button type="submit" class="btn btn-primary" th:disabled="${#lists.isEmpty(rounds)}">Gửi Trưởng bộ môn duyệt</button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

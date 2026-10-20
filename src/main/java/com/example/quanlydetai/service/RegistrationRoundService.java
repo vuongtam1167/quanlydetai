@@ -1,14 +1,18 @@
 package com.example.quanlydetai.service;
 
+import com.example.quanlydetai.dto.RoundView;
 import com.example.quanlydetai.model.GroupMember;
 import com.example.quanlydetai.model.RegistrationRound;
 import com.example.quanlydetai.model.StudentGroup;
 import com.example.quanlydetai.repository.GroupMemberRepository;
 import com.example.quanlydetai.repository.RegistrationRoundRepository;
 import com.example.quanlydetai.repository.StudentGroupRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +32,18 @@ public class RegistrationRoundService {
         this.groupRepository = groupRepository;
         this.memberRepository = memberRepository;
         this.emailService = emailService;
+    }
+
+
+    /** Các đợt gần nhất kèm tiến độ hiện tại (hiển thị ở trang chủ). */
+    @Transactional(readOnly = true)
+    public List<RoundView> getRecentRoundViews(int limit) {
+        LocalDateTime now = LocalDateTime.now();
+        return roundRepository
+                .findAll(PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "lecturerStartDate")))
+                .getContent().stream()
+                .map(r -> RoundView.of(r, now))
+                .toList();
     }
 
     public List<RegistrationRound> findAll() {

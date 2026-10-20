@@ -13,7 +13,7 @@
 	<artifactId>quanlydetai</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>quanlydetai</name>
-	<description />
+	<description>Hệ thống quản lý đề tài sinh viên - Khoa CNTT HCM-UTE</description>
 	<url />
 	<licenses>
 		<license />
@@ -52,15 +52,6 @@
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
@@ -93,6 +84,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+			<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.4.0</version>
 		</dependency>
 	</dependencies>
 

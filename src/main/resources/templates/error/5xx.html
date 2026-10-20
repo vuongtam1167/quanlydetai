@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Lỗi hệ thống', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: errorBox('500', 'Hệ thống gặp sự cố', 'Có lỗi xảy ra phía máy chủ. Vui lòng thử lại sau hoặc liên hệ quản trị viên.')}"></div>
+</main>
+</body>
+</html>

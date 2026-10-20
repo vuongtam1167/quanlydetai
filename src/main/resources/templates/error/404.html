@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Không tìm thấy', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: errorBox('404', 'Không tìm thấy trang', 'Đường dẫn không tồn tại hoặc dữ liệu đã bị xóa.')}"></div>
+</main>
+</body>
+</html>

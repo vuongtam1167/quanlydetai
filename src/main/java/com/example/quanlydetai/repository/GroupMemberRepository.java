@@ -17,4 +17,7 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
     
     // Lấy danh sách các nhóm mà sinh viên tham gia để tra cứu điểm
     List<GroupMember> findByStudentId(Long studentId);
+    boolean existsByStudentId(Long studentId);
+    void deleteByGroupId(Long groupId);
+    long countByGroupId(Long groupId);
 }

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Chấm điểm phản biện', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('CHẤM ĐIỂM & NHẬN XÉT PHẢN BIỆN')}"></div>
+
+    <div class="card" th:each="t : ${tasks}">
+        <div class="flex between center-y wrap gap-1" style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:14px">
+            <h3 class="mb-0" style="color:var(--ute-blue)"><span th:text="${t.topicCode()}">DT001</span> - <span th:text="${t.topicTitle()}">Tên đề tài</span></h3>
+            <div>
+                <span class="badge badge-green" th:if="${t.scored()}">Đã chấm</span>
+                <span class="badge badge-red" th:if="${t.overdue()}">Chưa nộp điểm, đã quá hạn</span>
+                <span class="badge badge-gray" th:if="${t.deadlineClosed() && !t.overdue() && !t.locked()}">Đã đóng hạn nộp điểm</span>
+                <span class="badge badge-gray" th:if="${t.locked()}">Đã công bố</span>
+            </div>
+        </div>
+        <p class="help">
+            Đợt: <strong th:text="${t.roundName()}">KLTN</strong> · GVHD: <strong th:text="${t.advisorNames()}">GV A</strong>
+            <span th:if="${t.deadline() != null}"> · Hạn nộp điểm: <strong th:text="${#temporals.format(t.deadline(), 'dd/MM/yyyy HH:mm')}">01/06/2026</strong></span>
+        </p>
+
+        <div class="grid-2">
+            <div>
+                <p th:if="${t.groupName() != null}"><strong>Nhóm:</strong> <span th:text="${t.groupName()}">Nhóm 01</span></p>
+                <ul style="padding-left:20px;margin:0 0 12px">
+                    <li th:each="m : ${t.members()}">
+                        <span th:text="${m.studentCode() + ' - ' + m.fullName()}">21110001 - Nguyễn Văn A</span>
+                        <strong style="color:var(--ute-blue)" th:if="${m.leader()}">(Nhóm trưởng)</strong>
+                    </li>
+                </ul>
+                <div th:if="${t.submitted()}">
+                    <a class="btn btn-outline btn-sm" th:href="${t.reportUrl()}" target="_blank" rel="noopener">📥 Mở báo cáo đồ án</a>
+                    <a class="btn btn-outline btn-sm" th:if="${t.sourceUrl() != null}" th:href="${t.sourceUrl()}" target="_blank" rel="noopener">💻 Xem mã nguồn</a>
+                </div>
+                <div class="alert alert-warning mb-0" th:unless="${t.submitted()}">Nhóm chưa nộp báo cáo.</div>
+            </div>
+
+            <div style="background:var(--row-alt);border:1px solid var(--border);border-radius:6px;padding:14px">
+                <form th:if="${!t.locked() && !t.deadlineClosed()}" th:action="@{/lecturer/reviews/{id}(id=${t.topicId()})}" method="post">
+                    <div class="form-group">
+                        <label class="form-label">Điểm phản biện (thang 10) <span class="req">*</span></label>
+                        <input type="number" step="0.25" min="0" max="10" name="score" class="form-control" style="width:160px"
+                               th:value="${t.score()}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nhận xét chi tiết &amp; câu hỏi cho nhóm <span class="req">*</span></label>
+                        <textarea name="comments" class="form-control" rows="4" required
+                                  placeholder="- Ưu điểm: ...&#10;- Hạn chế: ...&#10;- Câu hỏi: ..." th:text="${t.comments()}"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" th:text="${t.scored()} ? 'Cập nhật điểm phản biện' : 'Lưu điểm phản biện'">Lưu</button>
+                </form>
+                <div th:if="${t.locked() || t.deadlineClosed()}">
+                    <p th:if="${t.deadlineClosed() && !t.locked() && !t.scored()}" class="muted">Đã quá hạn và chưa có điểm được lưu.</p>
+                    <p th:if="${t.scored()}"><strong>Điểm đã chấm:</strong> <span th:text="${t.score()}">8.50</span></p>
+                    <p th:if="${t.scored()}" class="mb-0" style="white-space:pre-wrap" th:text="${t.comments()}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" th:if="${#lists.isEmpty(tasks)}">
+        <div th:replace="~{fragments/components :: empty('Thầy/Cô chưa được phân công phản biện đề tài nào.')}"></div>
+    </div>
+</main>
+</body>
+</html>

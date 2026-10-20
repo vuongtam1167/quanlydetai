@@ -1,65 +1,50 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Quản lý Đợt Đăng Ký</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <div th:replace="~{fragments/navbar :: navbar}"></div>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Đợt đăng ký', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1>QUẢN LÝ ĐỢT ĐĂNG KÝ ĐỀ TÀI</h1>
+        <div class="actions"><a class="btn btn-primary" th:href="@{/admin/rounds/new}">+ Tạo đợt mới</a></div>
+    </div>
 
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold text-primary">Quản lý Các Đợt Đăng Ký</h3>
-            <a th:href="@{/admin/rounds/new}" class="btn btn-primary fw-bold">+ Tạo đợt đăng ký mới</a>
-        </div>
-
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-0">
-                <table class="table table-hover table-bordered mb-0 align-middle">
-                    <thead class="table-dark text-center">
-                        <tr>
-                            <th>Tên Đợt</th>
-                            <th>Loại</th>
-                            <th>Thời gian GĐ1 (Giảng viên)</th>
-                            <th>Thời gian GĐ2 (Sinh viên)</th>
-                            <th>Trạng Thái</th>
-                            <th>Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="r : ${rounds}">
-                            <td class="fw-bold text-primary" th:text="${r.name}">KLTN 2026</td>
-                            <td class="text-center">
-                                <span class="badge bg-info text-dark" th:text="${r.type.name()}">KLTN</span>
-                            </td>
-                            <td class="text-center text-muted" style="font-size: 0.9em;">
-                                <span th:text="${#temporals.format(r.lecturerStartDate, 'dd/MM/yyyy')}"></span> - 
-                                <span th:text="${#temporals.format(r.lecturerEndDate, 'dd/MM/yyyy')}"></span>
-                            </td>
-                            <td class="text-center text-muted" style="font-size: 0.9em;">
-                                <span th:text="${#temporals.format(r.studentStartDate, 'dd/MM/yyyy')}"></span> - 
-                                <span th:text="${#temporals.format(r.studentEndDate, 'dd/MM/yyyy')}"></span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-success" th:if="${r.isPublished}">Đã Công Bố Điểm</span>
-                                <span class="badge bg-secondary" th:unless="${r.isPublished}">Đang Xử Lý</span>
-                            </td>
-                            <td class="text-center">
-                                <a th:href="@{/admin/rounds/{id}/edit(id=${r.id})}" class="btn btn-sm btn-outline-primary">Sửa</a>
-                                
-                                <!-- Chỉ hiển thị nút Công bố kết quả nếu chưa publish -->
-                                <form th:unless="${r.isPublished}" th:action="@{/admin/rounds/{id}/publish(id=${r.id})}" method="post" class="d-inline">
-                                    <button class="btn btn-sm btn-warning fw-bold" onclick="return confirm('Hệ thống sẽ tổng hợp điểm và gửi email cho toàn bộ Sinh viên. Bạn có chắc chắn?')">
-                                        Công bố điểm
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <div class="card">
+        <form method="get" th:action="@{/admin/rounds}" class="flex gap-1 wrap center-y mb-2">
+            <label class="form-label mb-0">Lọc theo loại:</label>
+            <select name="type" class="form-control" style="width:260px" onchange="this.form.submit()">
+                <option value="">Tất cả các loại</option>
+                <option th:each="t : ${typeLabels}" th:value="${t.key}" th:text="${t.value}" th:selected="${t.key == type}"></option>
+            </select>
+        </form>
+        <div class="table-wrap">
+            <table class="ute-table">
+                <thead><tr>
+                    <th>Tên đợt</th><th>Loại</th><th>GĐ1 - GV đề xuất</th><th>GĐ2 - SV đăng ký</th>
+                    <th>Tiến độ</th><th>Đề tài</th><th>Nhóm</th><th>Điểm</th><th>Thao tác</th>
+                </tr></thead>
+                <tbody>
+                <tr th:each="r : ${rounds}">
+                    <td><strong th:text="${r.name()}">KLTN HK1</strong></td>
+                    <td><span class="badge badge-gray" th:text="${r.typeLabel()}">KLTN</span></td>
+                    <td th:text="${#temporals.format(r.lecturerStart(), 'dd/MM/yyyy') + ' → ' + #temporals.format(r.lecturerEnd(), 'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(r.studentStart(), 'dd/MM/yyyy') + ' → ' + #temporals.format(r.studentEnd(), 'dd/MM/yyyy')}"></td>
+                    <td><span class="badge" th:classappend="${r.phaseClass()}" th:text="${r.phaseLabel()}">Đang mở</span></td>
+                    <td th:text="${topicCounts.getOrDefault(r.id(), 0L)}">0</td>
+                    <td th:text="${groupCounts.getOrDefault(r.id(), 0L)}">0</td>
+                    <td><span class="badge" th:classappend="${r.published()} ? 'badge-green' : 'badge-gray'" th:text="${r.published()} ? 'Đã công bố' : 'Chưa công bố'"></span></td>
+                    <td style="white-space:nowrap">
+                        <a class="btn btn-outline btn-sm" th:href="@{/admin/rounds/{id}/edit(id=${r.id()})}">Sửa</a>
+                        <form th:action="@{/admin/rounds/{id}/delete(id=${r.id()})}" method="post" style="display:inline"
+                              data-confirm="Xóa đợt đăng ký này? Chỉ xóa được khi đợt chưa có đề tài/nhóm/hội đồng.">
+                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(rounds)}"><td colspan="9" class="text-center muted" style="padding:28px">Chưa có đợt đăng ký nào.</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
+</main>
 </body>
 </html>

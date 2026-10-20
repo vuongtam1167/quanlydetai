@@ -24,6 +24,10 @@ public class StudentGroup {
     @Enumerated(EnumType.STRING)
     private GroupStatus status = GroupStatus.FORMING;
 
+    @ManyToOne
+    @JoinColumn(name = "council_id")
+    private Council council;
+
     @Column(name = "final_score", precision = 4, scale = 2)
     private BigDecimal finalScore;
 
@@ -75,4 +79,6 @@ public class StudentGroup {
         this.finalScore = finalScore;
     }
     
+    public Council getCouncil() { return council; }
+    public void setCouncil(Council council) { this.council = council; }
 }

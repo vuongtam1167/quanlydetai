@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Thẩm định đề tài', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('THẨM ĐỊNH ĐỀ TÀI CẤP BỘ MÔN')}"></div>
+    <p class="help" style="margin-top:-8px">Bộ môn: <strong th:text="${departmentName}">Kỹ thuật phần mềm</strong></p>
+
+    <div class="tabs">
+        <a th:each="s : ${statusLabels}" class="tab" style="text-decoration:none"
+           th:classappend="${s.key == status} ? 'active'"
+           th:href="@{/department/topics(status=${s.key})}">
+            <span th:text="${s.key == 'DEAN_APPROVED'} ? 'Đã thông qua (chờ Trưởng khoa)' : ${s.value}">Trạng thái</span>
+            <span class="badge badge-gray" th:text="${counts.getOrDefault(s.key, 0L)}">0</span>
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="table-wrap">
+            <table class="ute-table">
+                <thead><tr><th>Mã</th><th>Tên đề tài</th><th>GV hướng dẫn</th><th>Đợt</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                <tbody>
+                <tr th:each="t : ${topics}">
+                    <td><strong th:text="${t.code()}">DT001</strong></td>
+                    <td>
+                        <span th:text="${t.title()}">Tên đề tài</span>
+                        <div class="help" th:if="${t.note() != null}" th:text="${t.note()}"></div>
+                    </td>
+                    <td th:text="${t.advisors()}">GV A</td>
+                    <td th:text="${t.roundName()}">KLTN</td>
+                    <td><span class="badge" th:classappend="${t.statusClass()}" th:text="${t.statusLabel()}">Chờ bộ môn</span></td>
+                    <td style="min-width:240px">
+                        <th:block th:if="${t.status().name() == 'PENDING'}">
+                            <form th:action="@{/department/topics/{id}/approve(id=${t.id()})}" method="post" style="display:inline">
+                                <button type="submit" class="btn btn-success btn-sm">✔ Thông qua</button>
+                            </form>
+                            <details style="display:inline-block;vertical-align:top">
+                                <summary class="btn btn-warning btn-sm" style="list-style:none;display:inline-flex">✎ Yêu cầu sửa</summary>
+                                <form th:action="@{/department/topics/{id}/request-edit(id=${t.id()})}" method="post" style="margin-top:8px">
+                                    <input type="text" name="feedback" class="form-control" placeholder="Nội dung cần chỉnh sửa..." required>
+                                    <button type="submit" class="btn btn-primary btn-sm mt-1">Gửi phản hồi</button>
+                                </form>
+                            </details>
+                        </th:block>
+                        <span class="muted" th:unless="${t.status().name() == 'PENDING'}">—</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(topics)}"><td colspan="6" class="text-center muted" style="padding:28px">Không có đề tài nào ở mục này.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

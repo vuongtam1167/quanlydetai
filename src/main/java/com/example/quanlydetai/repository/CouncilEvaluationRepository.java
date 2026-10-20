@@ -10,4 +10,5 @@ import java.util.List;
 public interface CouncilEvaluationRepository extends JpaRepository<CouncilEvaluation, Long> {
     List<CouncilEvaluation> findByGroupId(Long groupId);
     List<CouncilEvaluation> findByCouncilId(Long councilId);
+    boolean existsByCouncilId(Long councilId);
 }

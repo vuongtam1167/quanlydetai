@@ -35,6 +35,9 @@ public class Topic {
     @Enumerated(EnumType.STRING)
     private TopicStatus status = TopicStatus.PENDING;
 
+    @Column(name = "review_note", columnDefinition = "TEXT")
+    private String reviewNote;
+
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
     private Lecturer createdBy;
@@ -120,4 +123,6 @@ public class Topic {
     }
 
     
+    public String getReviewNote() { return reviewNote; }
+    public void setReviewNote(String reviewNote) { this.reviewNote = reviewNote; }
 }

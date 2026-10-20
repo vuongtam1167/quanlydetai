@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Không gian nhóm', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('KHÔNG GIAN NHÓM SINH VIÊN')}"></div>
+
+    <div class="card" th:if="${#lists.isEmpty(options)}">
+        <div th:replace="~{fragments/components :: empty('Hiện chưa có đợt đăng ký nào đang mở để lập nhóm.')}"></div>
+    </div>
+
+    <th:block th:if="${!#lists.isEmpty(options)}">
+        <form method="get" th:action="@{/student/group}" class="flex gap-1 wrap center-y mb-2">
+            <label class="form-label mb-0">Đợt đăng ký:</label>
+            <select name="roundId" class="form-control" style="width:360px" onchange="this.form.submit()">
+                <option th:each="o : ${options}" th:value="${o.id()}" th:selected="${o.id() == roundId}"
+                        th:text="${o.name() + ' [' + o.typeLabel() + ']'}"></option>
+            </select>
+        </form>
+
+        <!-- ===== Chưa có nhóm ===== -->
+        <div class="card" th:if="${group == null}" style="max-width:640px">
+            <div class="card-title">Bạn chưa có nhóm trong đợt này</div>
+            <p class="muted">Lập nhóm mới: bạn sẽ là <strong>nhóm trưởng</strong> và thêm các thành viên khác bằng MSSV.
+                Mỗi nhóm cần từ <strong th:text="${minMembers}">3</strong> đến <strong th:text="${maxMembers}">5</strong> sinh viên;
+                mỗi sinh viên chỉ được thuộc 1 nhóm trong một đợt.</p>
+            <form th:action="@{/student/group/create}" method="post" class="flex gap-1 wrap" style="align-items:flex-end">
+                <input type="hidden" name="roundId" th:value="${roundId}">
+                <div style="flex:1;min-width:220px">
+                    <label class="form-label">Tên nhóm <span class="req">*</span></label>
+                    <input type="text" name="groupName" class="form-control" required maxlength="100" placeholder="VD: TECH_UTE_TEAM">
+                </div>
+                <button type="submit" class="btn btn-primary">Tạo nhóm</button>
+            </form>
+        </div>
+
+        <!-- ===== Đã có nhóm ===== -->
+        <div class="card" th:if="${group != null}">
+            <div class="flex between center-y wrap gap-1 mb-2">
+                <h3 class="mb-0">Tên nhóm: <span style="color:var(--ute-red)" th:text="${group.name()}">TECH_UTE_TEAM</span></h3>
+                <div>
+                    <span class="badge badge-green" th:if="${group.enoughMembers()}" th:text="'✔ Đủ thành viên (' + ${group.size()} + '/' + ${group.maxMembers()} + ')'"></span>
+                    <span class="badge badge-warn" th:unless="${group.enoughMembers()}" th:text="'⏳ Cần thêm thành viên (' + ${group.size()} + '/' + ${group.maxMembers()} + ', tối thiểu ' + ${group.minMembers()} + ')'"></span>
+                    <span class="badge badge-blue" th:if="${group.topicRegistered()}">Đã đăng ký đề tài</span>
+                </div>
+            </div>
+
+            <div class="alert alert-success" th:if="${group.topicRegistered()}">
+                Đề tài của nhóm: <strong th:text="${group.topicCode() + ' - ' + group.topicTitle()}">DT001 - Tên đề tài</strong>
+                (thành viên nhóm không thể thay đổi sau khi đã đăng ký đề tài).
+            </div>
+
+            <div class="table-wrap">
+                <table class="ute-table">
+                    <thead><tr><th>STT</th><th>MSSV</th><th>Họ và tên</th><th>Lớp</th><th>Vai trò</th><th>Thao tác</th></tr></thead>
+                    <tbody>
+                    <tr th:each="m, st : ${group.members()}">
+                        <td th:text="${st.count}">1</td>
+                        <td th:text="${m.studentCode()}">21110001</td>
+                        <td><span th:text="${m.fullName()}">Nguyễn Văn A</span> <span class="badge badge-info" th:if="${m.me()}">Bạn</span></td>
+                        <td th:text="${m.className()}">21110CL1</td>
+                        <td><strong th:if="${m.leader()}" style="color:var(--ute-blue)">Nhóm trưởng</strong><span th:unless="${m.leader()}">Thành viên</span></td>
+                        <td>
+                            <form th:if="${group.iAmLeader() and !m.leader() and group.editable()}"
+                                  th:action="@{/student/group/{g}/members/{m}/remove(g=${group.id()},m=${m.memberId()})}" method="post"
+                                  data-confirm="Xóa thành viên này khỏi nhóm?">
+                                <input type="hidden" name="roundId" th:value="${roundId}">
+                                <button type="submit" class="btn btn-danger btn-sm">Xóa khỏi nhóm</button>
+                            </form>
+                            <form th:if="${m.me() and !m.leader() and group.editable()}"
+                                  th:action="@{/student/group/{g}/leave(g=${group.id()})}" method="post" data-confirm="Rời khỏi nhóm này?">
+                                <input type="hidden" name="roundId" th:value="${roundId}">
+                                <button type="submit" class="btn btn-outline btn-sm">Rời nhóm</button>
+                            </form>
+                            <span class="muted" th:if="${m.leader()}">—</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-2" style="background:var(--ute-blue-light);padding:14px;border-radius:6px"
+                 th:if="${group.iAmLeader() and group.editable() and group.canAddMore()}">
+                <form th:action="@{/student/group/{g}/members(g=${group.id()})}" method="post" class="flex gap-1 wrap" style="align-items:flex-end">
+                    <input type="hidden" name="roundId" th:value="${roundId}">
+                    <div style="flex:1;min-width:220px">
+                        <label class="form-label">Thêm thành viên (nhập MSSV)</label>
+                        <input type="text" name="studentCode" class="form-control" required placeholder="VD: 21110002">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm vào nhóm</button>
+                </form>
+            </div>
+
+            <div class="alert alert-info mt-2 mb-0" th:if="${!group.iAmLeader()}">Chỉ nhóm trưởng mới thêm/xóa thành viên, đăng ký đề tài và nộp báo cáo.</div>
+
+            <div class="mt-2 flex" style="justify-content:flex-end" th:if="${group.iAmLeader() and group.editable()}">
+                <form th:action="@{/student/group/{g}/disband(g=${group.id()})}" method="post"
+                      data-confirm="Giải tán nhóm? Tất cả thành viên sẽ phải lập hoặc tham gia nhóm khác.">
+                    <input type="hidden" name="roundId" th:value="${roundId}">
+                    <button type="submit" class="btn btn-danger btn-sm">Giải tán nhóm</button>
+                </form>
+            </div>
+        </div>
+    </th:block>
+</main>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Hội đồng bảo vệ', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1>HỘI ĐỒNG BẢO VỆ</h1>
+        <div class="actions"><a class="btn btn-primary" th:href="@{/admin/councils/new}">+ Thành lập hội đồng</a></div>
+    </div>
+
+    <div class="card">
+        <p class="help mb-2">Mỗi hội đồng gồm 3 đến 5 giảng viên, có 1 Chủ tịch và 1 Thư ký. Thành viên hội đồng không được là GV hướng dẫn của nhóm được phân vào hội đồng đó.</p>
+        <div class="table-wrap">
+            <table class="ute-table">
+                <thead><tr>
+                    <th>Hội đồng</th><th>Đợt</th><th>Thời gian / Phòng</th><th>Chủ tịch</th><th>Thư ký</th>
+                    <th>Số GV</th><th>Số nhóm</th><th>Trạng thái</th><th>Thao tác</th>
+                </tr></thead>
+                <tbody>
+                <tr th:each="c : ${councils}">
+                    <td><strong th:text="${c.name()}">Hội đồng 1</strong></td>
+                    <td th:text="${c.roundName()}">KLTN</td>
+                    <td>
+                        <div th:text="${#temporals.format(c.defenseDate(), 'dd/MM/yyyy HH:mm')}">25/05/2026 08:00</div>
+                        <div class="help" th:text="${c.location()}">Phòng A101</div>
+                    </td>
+                    <td th:text="${c.chairName()}">GV A</td>
+                    <td th:text="${c.secretaryName()}">GV B</td>
+                    <td th:text="${c.memberCount()}">3</td>
+                    <td th:text="${c.groupCount()}">0</td>
+                    <td><span class="badge" th:classappend="${c.statusClass()}" th:text="${c.statusLabel()}">Chưa bảo vệ</span></td>
+                    <td style="white-space:nowrap">
+                        <a class="btn btn-outline btn-sm" th:if="${!c.locked()}" th:href="@{/admin/councils/{id}/edit(id=${c.id()})}">Sửa</a>
+                        <form th:if="${!c.locked()}" th:action="@{/admin/councils/{id}/delete(id=${c.id()})}" method="post" style="display:inline"
+                              data-confirm="Xóa hội đồng này? Các nhóm trong hội đồng sẽ được bỏ gán.">
+                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                        </form>
+                        <span class="badge badge-info" th:if="${c.locked()}" title="Đã có điểm chấm nên không chỉnh sửa được">Đã có điểm</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(councils)}"><td colspan="9" class="text-center muted" style="padding:28px">Chưa có hội đồng nào.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

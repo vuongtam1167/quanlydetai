@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Bộ môn', ~{::main})}">
+<body>
+<main>
+    <div class="page-title">
+        <h1>DANH MỤC BỘ MÔN</h1>
+        <div class="actions"><a class="btn btn-primary" th:href="@{/admin/departments/new}">+ Thêm bộ môn</a></div>
+    </div>
+    <div class="card">
+        <div class="table-wrap">
+            <table class="ute-table">
+                <thead><tr><th>Mã</th><th>Tên bộ môn</th><th>Mô tả</th><th>Số giảng viên</th><th>Thao tác</th></tr></thead>
+                <tbody>
+                <tr th:each="d : ${departments}">
+                    <td><strong th:text="${d.code}">CNPM</strong></td>
+                    <td th:text="${d.name}">Công nghệ phần mềm</td>
+                    <td th:text="${d.description}">Mô tả</td>
+                    <td th:text="${lecturerCounts.getOrDefault(d.id, 0L)}">0</td>
+                    <td style="white-space:nowrap">
+                        <a class="btn btn-outline btn-sm" th:href="@{/admin/departments/{id}/edit(id=${d.id})}">Sửa</a>
+                        <form th:action="@{/admin/departments/{id}/delete(id=${d.id})}" method="post" style="display:inline"
+                              data-confirm="Xóa bộ môn này?">
+                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(departments)}"><td colspan="5" class="text-center muted" style="padding:28px">Chưa có bộ môn nào.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

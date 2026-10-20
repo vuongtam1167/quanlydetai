@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Tra cứu điểm', ~{::main})}">
+<body>
+<main>
+    <div th:replace="~{fragments/components :: pageTitle('TRA CỨU KẾT QUẢ ĐÁNH GIÁ')}"></div>
+
+    <div class="card" th:if="${#lists.isEmpty(options)}">
+        <div th:replace="~{fragments/components :: empty('Bạn chưa có nhóm trong đợt đăng ký nào nên chưa có kết quả.')}"></div>
+    </div>
+
+    <th:block th:if="${!#lists.isEmpty(options)}">
+        <form method="get" th:action="@{/student/scores}" class="flex gap-1 wrap center-y mb-2">
+            <label class="form-label mb-0">Đợt đăng ký:</label>
+            <select name="roundId" class="form-control" style="width:360px" onchange="this.form.submit()">
+                <option th:each="o : ${options}" th:value="${o.id()}" th:selected="${o.id() == roundId}"
+                        th:text="${o.name() + ' [' + o.typeLabel() + ']'}"></option>
+            </select>
+        </form>
+
+        <th:block th:if="${score != null}">
+            <p class="help">Nhóm <strong th:text="${score.groupName()}">Nhóm 01</strong>
+                <span th:if="${score.topicCode() != null}"> · Đề tài <strong th:text="${score.topicCode() + ' - ' + score.topicTitle()}">DT001</strong></span></p>
+
+            <div class="card" th:if="${!score.published()}" style="text-align:center;padding:40px">
+                <h3 class="muted">Khoa chưa công bố kết quả của đợt này.</h3>
+                <p class="mb-0">Vui lòng quay lại sau khi có thông báo chính thức.</p>
+            </div>
+
+            <div class="card" th:if="${score.published() and score.topicCode() == null}" style="text-align:center;padding:40px">
+                <h3 class="muted">Nhóm chưa đăng ký đề tài trong đợt này nên không có điểm.</h3>
+            </div>
+
+            <div class="grid-2" th:if="${score.published() and score.topicCode() != null}" style="grid-template-columns:2fr 1fr;align-items:start">
+                <div class="card">
+                    <div class="card-title">Chi tiết điểm thành phần</div>
+                    <table class="ute-table mb-2">
+                        <thead><tr><th>Thành phần đánh giá</th><th>Điểm số</th></tr></thead>
+                        <tbody>
+                        <tr><td>Điểm Giảng viên phản biện</td>
+                            <td><span th:if="${score.reviewerScore() != null}" th:text="${score.reviewerScore()}">8.50</span><span class="muted" th:if="${score.reviewerScore() == null}">chưa có</span></td></tr>
+                        <tr><td>Điểm trung bình Hội đồng</td>
+                            <td><span th:if="${score.councilScore() != null}" th:text="${score.councilScore()}">9.00</span><span class="muted" th:if="${score.councilScore() == null}">chưa có</span></td></tr>
+                        </tbody>
+                    </table>
+                    <th:block th:if="${score.reviewerComments() != null}">
+                        <h4 class="mb-1">Nhận xét của Giảng viên phản biện</h4>
+                        <div style="background:var(--row-alt);padding:12px;border:1px dashed var(--muted);border-radius:4px;white-space:pre-wrap;margin-bottom:14px" th:text="${score.reviewerComments()}"></div>
+                    </th:block>
+                    <th:block th:if="${score.councilComments() != null}">
+                        <h4 class="mb-1">Nhận xét từ Chủ tịch Hội đồng</h4>
+                        <div style="background:var(--row-alt);padding:12px;border:1px dashed var(--muted);border-radius:4px;white-space:pre-wrap" th:text="${score.councilComments()}"></div>
+                    </th:block>
+                </div>
+
+                <div class="card" style="text-align:center">
+                    <div class="muted" style="font-weight:700">ĐIỂM TỔNG KẾT</div>
+                    <div style="font-size:52px;font-weight:700;color:var(--ute-blue);margin:14px 0" th:if="${score.hasFinal()}" th:text="${score.finalScore()}">8.75</div>
+                    <div class="muted" th:unless="${score.hasFinal()}" style="margin:24px 0">Chưa có điểm tổng kết</div>
+                    <span class="badge badge-green" th:if="${score.hasFinal() and score.passed()}" style="font-size:16px;padding:8px 24px">ĐẠT</span>
+                    <span class="badge badge-red" th:if="${score.hasFinal() and !score.passed()}" style="font-size:16px;padding:8px 24px">KHÔNG ĐẠT</span>
+                </div>
+            </div>
+        </th:block>
+    </th:block>
+</main>
+</body>
+</html>

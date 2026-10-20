@@ -11,4 +11,9 @@ import java.util.Optional;
 public interface StudentGroupRepository extends JpaRepository<StudentGroup, Long> {
     List<StudentGroup> findByRoundId(Long roundId);
     Optional<StudentGroup> findByTopicId(Long topicId);
+    List<StudentGroup> findByTopicIsNotNullOrderByRoundIdDescIdAsc();
+    List<StudentGroup> findByCouncilId(Long councilId);
+    long countByRoundId(Long roundId);
+    long countByCouncilId(Long councilId);
+    boolean existsByRoundIdAndGroupNameIgnoreCase(Long roundId, String groupName);
 }
