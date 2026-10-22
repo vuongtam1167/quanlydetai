@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-/** Form giảng viên đề xuất/sửa đề tài (Giai đoạn 1). GVHD 1 luôn là người đang đăng nhập. */
+/**
+ * Form giảng viên đề xuất/sửa đề tài (Giai đoạn 1). GVHD 1 luôn là người đang đăng nhập.
+ */
 public class TopicForm {
 
     private Long id;
@@ -40,18 +42,59 @@ public class TopicForm {
         return f;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Long getRoundId() { return roundId; }
-    public void setRoundId(Long roundId) { this.roundId = roundId; }
-    public Long getDepartmentId() { return departmentId; }
-    public void setDepartmentId(Long departmentId) { this.departmentId = departmentId; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public String getRequirements() { return requirements; }
-    public void setRequirements(String requirements) { this.requirements = requirements; }
-    public Long getAdvisor2Id() { return advisor2Id; }
-    public void setAdvisor2Id(Long advisor2Id) { this.advisor2Id = advisor2Id; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getRoundId() {
+        return roundId;
+    }
+
+    public void setRoundId(Long roundId) {
+        this.roundId = roundId;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getRequirements() {
+        return requirements;
+    }
+
+    public void setRequirements(String requirements) {
+        this.requirements = requirements;
+    }
+
+    public Long getAdvisor2Id() {
+        return advisor2Id;
+    }
+
+    public void setAdvisor2Id(Long advisor2Id) {
+        this.advisor2Id = advisor2Id;
+    }
 }

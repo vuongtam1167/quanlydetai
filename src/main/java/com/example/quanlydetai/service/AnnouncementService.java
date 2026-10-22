@@ -34,8 +34,7 @@ public class AnnouncementService {
     }
 
     /**
-     * Tìm kiếm + phân trang; thông báo ghim luôn nằm trên cùng, sau đó mới nhất
-     * trước.
+     * Tìm kiếm + phân trang; thông báo ghim luôn nằm trên cùng, sau đó mới nhất trước.
      */
     @Transactional(readOnly = true)
     public Page<Announcement> search(String keyword, int page, int size) {

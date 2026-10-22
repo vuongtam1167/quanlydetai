@@ -54,24 +54,83 @@ public class LecturerForm {
         return f;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getLecturerCode() { return lecturerCode; }
-    public void setLecturerCode(String v) { this.lecturerCode = v; }
-    public String getFullName() { return fullName; }
-    public void setFullName(String v) { this.fullName = v; }
-    public String getEmail() { return email; }
-    public void setEmail(String v) { this.email = v; }
-    public String getPhone() { return phone; }
-    public void setPhone(String v) { this.phone = v; }
-    public String getAcademicRank() { return academicRank; }
-    public void setAcademicRank(String v) { this.academicRank = v; }
-    public Long getDepartmentId() { return departmentId; }
-    public void setDepartmentId(Long v) { this.departmentId = v; }
-    public Role getRole() { return role; }
-    public void setRole(Role v) { this.role = v; }
-    public String getUsername() { return username; }
-    public void setUsername(String v) { this.username = v; }
-    public String getPassword() { return password; }
-    public void setPassword(String v) { this.password = v; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getLecturerCode() {
+        return lecturerCode;
+    }
+
+    public void setLecturerCode(String v) {
+        this.lecturerCode = v;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String v) {
+        this.fullName = v;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String v) {
+        this.email = v;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String v) {
+        this.phone = v;
+    }
+
+    public String getAcademicRank() {
+        return academicRank;
+    }
+
+    public void setAcademicRank(String v) {
+        this.academicRank = v;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long v) {
+        this.departmentId = v;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role v) {
+        this.role = v;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String v) {
+        this.username = v;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String v) {
+        this.password = v;
+    }
 }

@@ -5,7 +5,7 @@ import com.example.quanlydetai.model.enums.TopicStatus;
 
 /** Một dòng đề tài hiển thị trong các bảng duyệt/thẩm định. */
 public record TopicRow(Long id, String code, String title, String departmentName, String roundName,
-                       String advisors, TopicStatus status, String note) {
+        String advisors, TopicStatus status, String note) {
 
     public static TopicRow of(Topic t, String advisors) {
         return new TopicRow(t.getId(), t.getCode(), t.getTitle(), t.getDepartment().getName(),

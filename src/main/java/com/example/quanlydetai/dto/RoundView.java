@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 
 /** Dữ liệu đợt đăng ký đã tính sẵn tiến độ hiện tại để hiển thị. */
 public record RoundView(Long id, String name, String typeLabel,
-                        LocalDateTime lecturerStart, LocalDateTime lecturerEnd,
-                        LocalDateTime studentStart, LocalDateTime studentEnd,
-                        boolean published, String phaseLabel, String phaseClass) {
+        LocalDateTime lecturerStart, LocalDateTime lecturerEnd,
+        LocalDateTime studentStart, LocalDateTime studentEnd,
+        boolean published, String phaseLabel, String phaseClass) {
 
     public static RoundView of(RegistrationRound r, LocalDateTime now) {
         String label;

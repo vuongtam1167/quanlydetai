@@ -7,8 +7,8 @@ import java.util.List;
 
 /** Hội đồng mà giảng viên là thành viên, cùng danh sách nhóm cần chấm. */
 public record CouncilTask(Long councilId, String name, String roundName, LocalDateTime defenseDate,
-                          String location, CouncilStatus status, boolean chair, String myRoleLabel,
-                          boolean readyToComplete, List<CouncilGroupTask> groups) {
+        String location, CouncilStatus status, boolean chair, String myRoleLabel,
+        boolean readyToComplete, List<CouncilGroupTask> groups) {
 
     public boolean completed() {
         return status == CouncilStatus.COMPLETED;

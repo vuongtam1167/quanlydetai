@@ -9,7 +9,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Form thành lập/sửa hội đồng: 3-5 giảng viên gồm 1 chủ tịch + 1 thư ký + ủy viên. */
+/**
+ * Form thành lập/sửa hội đồng: 3-5 giảng viên gồm 1 chủ tịch + 1 thư ký + ủy
+ * viên.
+ */
 public class CouncilForm {
 
     private Long id;
@@ -37,22 +40,75 @@ public class CouncilForm {
     private List<Long> memberIds = new ArrayList<>();
     private List<Long> groupIds = new ArrayList<>();
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Long getRoundId() { return roundId; }
-    public void setRoundId(Long roundId) { this.roundId = roundId; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-    public LocalDateTime getDefenseDate() { return defenseDate; }
-    public void setDefenseDate(LocalDateTime defenseDate) { this.defenseDate = defenseDate; }
-    public Long getChairId() { return chairId; }
-    public void setChairId(Long chairId) { this.chairId = chairId; }
-    public Long getSecretaryId() { return secretaryId; }
-    public void setSecretaryId(Long secretaryId) { this.secretaryId = secretaryId; }
-    public List<Long> getMemberIds() { return memberIds; }
-    public void setMemberIds(List<Long> memberIds) { this.memberIds = memberIds == null ? new ArrayList<>() : memberIds; }
-    public List<Long> getGroupIds() { return groupIds; }
-    public void setGroupIds(List<Long> groupIds) { this.groupIds = groupIds == null ? new ArrayList<>() : groupIds; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getRoundId() {
+        return roundId;
+    }
+
+    public void setRoundId(Long roundId) {
+        this.roundId = roundId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public LocalDateTime getDefenseDate() {
+        return defenseDate;
+    }
+
+    public void setDefenseDate(LocalDateTime defenseDate) {
+        this.defenseDate = defenseDate;
+    }
+
+    public Long getChairId() {
+        return chairId;
+    }
+
+    public void setChairId(Long chairId) {
+        this.chairId = chairId;
+    }
+
+    public Long getSecretaryId() {
+        return secretaryId;
+    }
+
+    public void setSecretaryId(Long secretaryId) {
+        this.secretaryId = secretaryId;
+    }
+
+    public List<Long> getMemberIds() {
+        return memberIds;
+    }
+
+    public void setMemberIds(List<Long> memberIds) {
+        this.memberIds = memberIds == null ? new ArrayList<>() : memberIds;
+    }
+
+    public List<Long> getGroupIds() {
+        return groupIds;
+    }
+
+    public void setGroupIds(List<Long> groupIds) {
+        this.groupIds = groupIds == null ? new ArrayList<>() : groupIds;
+    }
 }

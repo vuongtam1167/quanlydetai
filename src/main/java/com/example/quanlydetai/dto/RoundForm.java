@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
-/** Form tạo/sửa đợt đăng ký (Trưởng khoa). */
+/** Form tạo/sửa đợt đăng ký (Trưởng khoa)*/
 public class RoundForm {
 
     private Long id;
@@ -57,22 +57,75 @@ public class RoundForm {
         return f;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public RoundType getType() { return type; }
-    public void setType(RoundType type) { this.type = type; }
-    public LocalDateTime getLecturerStartDate() { return lecturerStartDate; }
-    public void setLecturerStartDate(LocalDateTime v) { this.lecturerStartDate = v; }
-    public LocalDateTime getLecturerEndDate() { return lecturerEndDate; }
-    public void setLecturerEndDate(LocalDateTime v) { this.lecturerEndDate = v; }
-    public LocalDateTime getStudentStartDate() { return studentStartDate; }
-    public void setStudentStartDate(LocalDateTime v) { this.studentStartDate = v; }
-    public LocalDateTime getStudentEndDate() { return studentEndDate; }
-    public void setStudentEndDate(LocalDateTime v) { this.studentEndDate = v; }
-    public LocalDateTime getReviewerDeadline() { return reviewerDeadline; }
-    public void setReviewerDeadline(LocalDateTime v) { this.reviewerDeadline = v; }
-    public LocalDateTime getCouncilReportDate() { return councilReportDate; }
-    public void setCouncilReportDate(LocalDateTime v) { this.councilReportDate = v; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public RoundType getType() {
+        return type;
+    }
+
+    public void setType(RoundType type) {
+        this.type = type;
+    }
+
+    public LocalDateTime getLecturerStartDate() {
+        return lecturerStartDate;
+    }
+
+    public void setLecturerStartDate(LocalDateTime v) {
+        this.lecturerStartDate = v;
+    }
+
+    public LocalDateTime getLecturerEndDate() {
+        return lecturerEndDate;
+    }
+
+    public void setLecturerEndDate(LocalDateTime v) {
+        this.lecturerEndDate = v;
+    }
+
+    public LocalDateTime getStudentStartDate() {
+        return studentStartDate;
+    }
+
+    public void setStudentStartDate(LocalDateTime v) {
+        this.studentStartDate = v;
+    }
+
+    public LocalDateTime getStudentEndDate() {
+        return studentEndDate;
+    }
+
+    public void setStudentEndDate(LocalDateTime v) {
+        this.studentEndDate = v;
+    }
+
+    public LocalDateTime getReviewerDeadline() {
+        return reviewerDeadline;
+    }
+
+    public void setReviewerDeadline(LocalDateTime v) {
+        this.reviewerDeadline = v;
+    }
+
+    public LocalDateTime getCouncilReportDate() {
+        return councilReportDate;
+    }
+
+    public void setCouncilReportDate(LocalDateTime v) {
+        this.councilReportDate = v;
+    }
 }
